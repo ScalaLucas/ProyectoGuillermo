@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propiedad | Guillermo Propiedades</title>
+<meta name="description" content="Detalle de la propiedad — Guillermo Propiedades, Zona Oeste.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./estilos/estilos.css">
+</head>
+<body>
+
+<nav class="nav" data-home="false">
+  <a class="nav__brand" href="index.html"><img class="nav__logo" src="assets/logo.png" alt="Guillermo Propiedades"></a>
+  <div class="nav__links">
+    <a class="nav__link" href="propiedades.html?op=Venta">Comprar</a>
+    <a class="nav__link" href="propiedades.html?op=Alquiler">Alquilar</a>
+    <a class="nav__link" href="index.html#nosotros">Nosotros</a>
+    <a class="nav__link" href="index.html#servicios">Servicios</a>
+    <a class="nav__link" href="index.html#contacto">Contacto</a>
+    <a class="nav__link btn btn--accent nav__cta" data-wa="Hola Guillermo Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+  </div>
+  <button class="nav__burger" aria-label="Menú">☰</button>
+</nav>
+
+<div class="mobile-menu">
+  <a href="propiedades.html?op=Venta">Comprar</a>
+  <a href="propiedades.html?op=Alquiler">Alquilar</a>
+  <a href="index.html#nosotros">Nosotros</a>
+  <a href="index.html#servicios">Servicios</a>
+  <a href="index.html#contacto">Contacto</a>
+  <a class="btn btn--accent" data-wa="Hola Guillermo Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+</div>
+
+<main id="detail" class="page-top">
+  <a class="back-link" href="propiedades.html">← Volver al listado</a>
+
+  <div class="detail-gallery">
+    <div class="detail-gallery__main"><span class="detail-ph" id="detail-mainph">FOTO PRINCIPAL</span></div>
+    <div class="detail-gallery__side">
+      <div><span class="detail-ph">FOTO</span></div>
+      <div><span class="detail-ph">+ FOTOS</span></div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div>
+      <div class="detail-op" id="detail-op"></div>
+      <h1 id="detail-title"></h1>
+      <div class="detail-price" id="detail-price"></div>
+      <div class="spec-row" id="detail-specs"></div>
+      <h2>Descripción</h2>
+      <div id="detail-desc"></div>
+      <h2 style="margin-top:16px">Características</h2>
+      <div class="feature-list" id="detail-feats"></div>
+    </div>
+
+    <aside class="aside">
+      <div class="aside__ref" id="aside-ref"></div>
+      <div class="aside__price" id="aside-price"></div>
+      <div class="aside__agent">
+        <div class="aside__ava">G</div>
+        <div><div style="font-weight:700;font-size:15px;color:var(--ink)">Guillermo Propiedades</div><div style="font-size:12.5px;color:#8a887f">Asesor · Mat. 1322</div></div>
+      </div>
+      <a class="btn btn--wa btn--block" id="aside-wa" target="_blank">Consultar por WhatsApp</a>
+      <a class="btn btn--dark btn--block" href="index.html#contacto">Solicitar visita</a>
+      <button class="btn btn--block" id="aside-fav" style="background:none;border:1px solid rgba(18,34,52,.15);color:var(--ink)">♡ Guardar</button>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      <span class="footer__logo"><img src="assets/logo.png" alt="Guillermo Propiedades"></span>
+      <p>Negocios inmobiliarios en Santos Lugares y toda la Zona Oeste. Venta, alquiler, tasaciones y administración con atención personalizada.</p>
+      <div class="footer__soc">
+        <a data-wa="Hola Guillermo Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp">✆</a>
+        <a data-ig target="_blank" aria-label="Instagram">IG</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__h">Secciones</div>
+      <div class="footer__col">
+        <a href="index.html">Inicio</a>
+        <a href="propiedades.html?op=Venta">Venta</a>
+        <a href="propiedades.html?op=Alquiler">Alquiler</a>
+        <a href="index.html#nosotros">Nosotros</a>
+        <a href="index.html#contacto">Contacto</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__h">Contacto</div>
+      <div class="footer__col">
+        <span>Marcos Sastre 87<br>Haedo</span>
+        <span>4712-0868 · 11 3628-1168</span>
+        <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b6a4b8bdbdb4a3bcbea1a3bea1b8b4b5b0b5b4a291b9bea5bcb0b8bdffb2bebc">[email&#160;protected]</a></span>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bar"><div><span>© 2026 Guillermo Propiedades. Todos los derechos reservados.</span><span>Colegio de San Martín · Matrícula 1322</span></div></div>
+</footer>
+
+<a class="wa-float" data-wa="Hola Guillermo Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp">✆</a>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./script/script.js"></script>
+</body>
+</html>
