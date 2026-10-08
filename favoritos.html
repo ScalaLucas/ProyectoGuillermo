@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favoritos | Marcelo Ragonese Propiedades</title>
+<meta name="description" content="Propiedades guardadas — Marcelo Ragonese Propiedades, Zona Oeste.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.png?v=20260922">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:wght@700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./estilos/estilos.css?v=20260918b">
+<style>
+  .fav-check-wrap{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted-2);margin-bottom:10px;cursor:pointer}
+  .fav-check-wrap input{width:auto}
+</style>
+</head>
+<body>
+
+<div class="topbar"><a class="topbar__brand" href="index.html"><img class="topbar__icon" src="assets/logo-mr-icon.png?v=20260917" alt="Marcelo Ragonese Propiedades"><span class="topbar__word"><strong>Marcelo Ragonese</strong><small>Propiedades</small></span></a></div>
+<nav class="nav" data-home="false">
+  <div class="nav__links">
+    <a class="nav__link" href="propiedades.html?op=Venta">Comprar</a>
+    <a class="nav__link" href="propiedades.html?op=Alquiler">Alquilar</a>
+    <a class="nav__link" href="index.html#nosotros">Nosotros</a>
+    <a class="nav__link" href="index.html#servicios">Servicios</a>
+    <a class="nav__link" href="index.html#contacto">Contacto</a>
+    <a class="nav__link" href="favoritos.html">♡ Favoritos<span data-fav-count></span></a>
+    <a class="nav__link btn btn--accent nav__cta" data-wa="Hola Marcelo Ragonese Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+  </div>
+  <button class="nav__burger" aria-label="Menú" aria-expanded="false"><i></i><i></i><i></i></button>
+</nav>
+
+<div class="mobile-menu">
+  <a href="propiedades.html?op=Venta">Comprar</a>
+  <a href="propiedades.html?op=Alquiler">Alquilar</a>
+  <a href="index.html#nosotros">Nosotros</a>
+  <a href="index.html#servicios">Servicios</a>
+  <a href="index.html#contacto">Contacto</a>
+  <a href="favoritos.html">♡ Favoritos<span data-fav-count></span></a>
+  <a class="btn btn--accent" data-wa="Hola Marcelo Ragonese Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+</div>
+
+<main class="page-top">
+  <div class="list-hero">
+    <div style="max-width:var(--maxw);margin:0 auto">
+      <div class="crumbs"><a href="index.html">Inicio</a><span class="crumbs__sep">›</span><span>Favoritos</span></div>
+      <h1>Tus propiedades guardadas</h1>
+    </div>
+  </div>
+
+  <div style="max-width:var(--maxw);margin:40px auto 0;padding:0 clamp(20px,5vw,60px) 90px">
+    <div class="list-bar" id="fav-bar" hidden>
+      <div class="list-bar__count" id="fav-count">—</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <a class="list-bar__clear" id="fav-select-toggle">Deseleccionar todas</a>
+        <a class="btn btn--dark" id="fav-reporte-btn" target="_blank">📄 Reporte de seleccionadas</a>
+      </div>
+    </div>
+
+    <div class="list-grid" id="fav-grid"></div>
+
+    <div class="empty" id="fav-empty" style="display:none">
+      <h3>Todavía no guardaste propiedades</h3>
+      <p>Tocá el corazón ♡ en cualquier propiedad para guardarla acá. Después podés imprimirlas o compartirlas por WhatsApp con quien quieras.</p>
+      <a class="btn btn--dark" href="propiedades.html">Ver propiedades</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      <span class="footer__logo"><img src="assets/logo.png?v=20260905" alt="Marcelo Ragonese Propiedades"></span>
+      <p>Negocios inmobiliarios en Ramos Mejía y toda la Zona Oeste. Venta, alquiler, tasaciones y administración con atención personalizada.</p>
+      <div class="footer__soc">
+        <a data-wa="Hola Marcelo Ragonese Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01A9.816 9.816 0 0 0 12.04 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.23 8.25-8.23m-4.52 4.7c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9 0 1.12.82 2.21.93 2.36.11.15 1.6 2.44 3.93 3.42 1.95.82 2.35.66 2.77.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.27-.23-.12-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.1-.1.23-.27.34-.4.11-.14.15-.23.23-.39.08-.15.04-.29-.02-.41-.06-.11-.51-1.24-.71-1.7-.19-.44-.38-.39-.53-.4-.14-.01-.29-.01-.44-.01z"/></svg></a>
+        <a data-ig target="_blank" aria-label="Instagram">IG</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__h">Secciones</div>
+      <div class="footer__col">
+        <a href="index.html">Inicio</a>
+        <a href="propiedades.html?op=Venta">Venta</a>
+        <a href="propiedades.html?op=Alquiler">Alquiler</a>
+        <a href="index.html#nosotros">Nosotros</a>
+        <a href="index.html#contacto">Contacto</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__h">Contacto</div>
+      <div class="footer__col">
+        <span>Bolívar 699, Ramos Mejía</span>
+        <span>+54 9 11 4673 8707</span>
+        <span><a href="mailto:marceloragonesepropiedades@gmail.com">marceloragonesepropiedades@gmail.com</a></span>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bar"><div><span>© 2026 Marcelo Ragonese Propiedades. Todos los derechos reservados.</span><span>Colegio Martillero de La Matanza · Matrícula 070 - 1160</span></a></div>
+</footer>
+
+<a class="wa-float" data-wa="Hola Marcelo Ragonese Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01A9.816 9.816 0 0 0 12.04 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.23 8.25-8.23m-4.52 4.7c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9 0 1.12.82 2.21.93 2.36.11.15 1.6 2.44 3.93 3.42 1.95.82 2.35.66 2.77.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.27-.23-.12-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.1-.1.23-.27.34-.4.11-.14.15-.23.23-.39.08-.15.04-.29-.02-.41-.06-.11-.51-1.24-.71-1.7-.19-.44-.38-.39-.53-.4-.14-.01-.29-.01-.44-.01z"/></svg></a>
+
+<script src="./script/script.js?v=20260925"></script>
+<script>
+(function () {
+  function $(s, ctx) { return (ctx || document).querySelector(s); }
+  function $all(s, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(s)); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+  var ICON_AREA = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18-3v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3m8-5v3a2 2 0 0 1-2 2h-3"/></svg>';
+  var ICON_BED = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6M2 18v2M22 18v2M6 10V6a2 2 0 0 1 2-2h4M2 14h20"/></svg>';
+
+  function cardHTML(p) {
+    var stats = '<span>' + ICON_AREA + Number(p.m2 || 0).toLocaleString("es-AR") + ' m²</span>';
+    if (p.dorm > 0) stats += '<span>' + ICON_BED + p.dorm + '</span>';
+    var foto = (p.fotos && p.fotos.length)
+      ? '<img src="' + esc(p.fotos[0]) + '" alt="' + esc(p.direccion) + '" loading="lazy">'
+      : '<span class="card__ph">FOTO · ' + esc(p.tipo) + '</span>';
+    return '' +
+      '<article class="card" data-id="' + p.id + '">' +
+        '<div class="card__media">' +
+          foto +
+          '<div class="card__stats">' + stats + '</div>' +
+          '<div class="card__tags">' +
+            '<span class="card__tag">' + esc(p.operacion) + '</span>' +
+            '<span class="card__tag card__tag--type">' + esc(p.tipo) + '</span>' +
+          '</div>' +
+          '<button class="card__fav active" data-fav="' + p.id + '" aria-label="Quitar de guardados">♥</button>' +
+          '<a class="card__fav card__share" href="reporte.html?id=' + encodeURIComponent(p.id) + '" target="_blank" aria-label="Reporte" title="Reporte individual">📤</a>' +
+        '</div>' +
+        '<div class="card__body">' +
+          '<label class="fav-check-wrap"><input type="checkbox" class="fav-check" data-id="' + p.id + '" checked> Incluir en el reporte</label>' +
+          '<div class="card__zone">' + esc(p.zona) + '</div>' +
+          '<h3 class="card__title">' + esc(p.titulo || p.direccion) + '</h3>' +
+          '<div class="card__price">' + esc(p.precio) + '</div>' +
+        '</div>' +
+      '</article>';
+  }
+
+  function seleccionadas() {
+    return $all(".fav-check:checked").map(function (c) { return c.getAttribute("data-id"); });
+  }
+
+  function actualizarBarra() {
+    var ids = seleccionadas();
+    var count = $("#fav-count");
+    if (count) count.textContent = ids.length + (ids.length === 1 ? " seleccionada" : " seleccionadas");
+    var btn = $("#fav-reporte-btn");
+    if (btn) {
+      if (ids.length) { btn.href = "reporte.html?ids=" + encodeURIComponent(ids.join(",")); btn.classList.remove("btn--ghost"); }
+      else { btn.removeAttribute("href"); }
+    }
+  }
+
+  function render() {
+    var favs = (window.GP && GP.getFavs) ? GP.getFavs() : {};
+    var ids = Object.keys(favs);
+    var props = (GP.properties || []).filter(function (p) { return favs[p.id]; });
+    var grid = $("#fav-grid"), empty = $("#fav-empty"), bar = $("#fav-bar");
+
+    if (!ids.length || !props.length) {
+      grid.innerHTML = "";
+      grid.style.display = "none";
+      if (bar) bar.hidden = true;
+      if (empty) empty.style.display = "block";
+      return;
+    }
+
+    grid.innerHTML = props.map(cardHTML).join("");
+    grid.style.display = "";
+    if (empty) empty.style.display = "none";
+    if (bar) bar.hidden = false;
+
+    $all(".card", grid).forEach(function (card) {
+      card.addEventListener("click", function (e) {
+        if (e.target.closest("[data-fav], .card__share, .fav-check-wrap")) return;
+        location.href = "propiedad.html?id=" + encodeURIComponent(card.getAttribute("data-id"));
+      });
+    });
+    $all("[data-fav]", grid).forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        GP.toggleFav(btn.getAttribute("data-fav"));
+        render();
+      });
+    });
+    $all(".fav-check", grid).forEach(function (cb) {
+      cb.addEventListener("change", actualizarBarra);
+    });
+
+    actualizarBarra();
+  }
+
+  var toggleTodas = $("#fav-select-toggle");
+  if (toggleTodas) {
+    toggleTodas.addEventListener("click", function () {
+      var checks = $all(".fav-check");
+      var algunaMarcada = checks.some(function (c) { return c.checked; });
+      checks.forEach(function (c) { c.checked = !algunaMarcada; });
+      toggleTodas.textContent = algunaMarcada ? "Seleccionar todas" : "Deseleccionar todas";
+      actualizarBarra();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    fetch("api/propiedades.php")
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (data) { GP.properties = Array.isArray(data) ? data : []; })
+      .catch(function () { GP.properties = []; })
+      .then(render);
+  });
+})();
+</script>
+</body>
+</html>

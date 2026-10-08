@@ -4,32 +4,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guillermo Propiedades | Inmobiliaria en Zona Oeste · Santos Lugares</title>
-<meta name="description" content="Guillermo Propiedades — Inmobiliaria en Santos Lugares, Zona Oeste. Compra, venta, alquiler, tasaciones y administración de propiedades. Matrícula 1322.">
-<meta name="keywords" content="inmobiliaria, Santos Lugares, Zona Oeste, Tres de Febrero, propiedades, venta, alquiler, tasaciones">
-<meta property="og:title" content="Guillermo Propiedades | Inmobiliaria en Zona Oeste">
-<meta property="og:description" content="Compra, venta, alquiler y tasaciones en Santos Lugares y toda la Zona Oeste.">
+<title>Marcelo Ragonese Propiedades | Zona Oeste · Ramos Mejía</title>
+<meta name="description" content="Marcelo Ragonese Propiedades — en Ramos Mejía, Zona Oeste. Compra, venta, alquiler, tasaciones y administración de propiedades. Matrícula 070 - 1160.">
+<meta name="keywords" content="inmobiliaria, Ramos Mejía, Zona Oeste, La Matanza, propiedades, venta, alquiler, tasaciones">
+<meta property="og:title" content="Marcelo Ragonese Propiedades | Zona Oeste">
+<meta property="og:description" content="Compra, venta, alquiler y tasaciones en Ramos Mejía y toda la Zona Oeste.">
 <meta property="og:type" content="website">
-<link rel="icon" href="assets/logo.png">
+<link rel="icon" href="assets/favicon.png?v=20260922">
+<link rel="shortcut icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./estilos/estilos.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:wght@700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./estilos/estilos.css?v=20260918b">
 </head>
 <body>
 
 <!-- NAV -->
+<div class="topbar"><a class="topbar__brand" href="index.html"><img class="topbar__icon" src="assets/logo-mr-icon.png?v=20260917" alt="Marcelo Ragonese Propiedades"><span class="topbar__word"><strong>Marcelo Ragonese</strong><small>Propiedades</small></span></a></div>
 <nav class="nav" data-home="true">
-  <a class="nav__brand" href="index.html"><img class="nav__logo" src="assets/logo.png" alt="Guillermo Propiedades"></a>
   <div class="nav__links">
     <a class="nav__link" href="propiedades.html?op=Venta">Comprar</a>
     <a class="nav__link" href="propiedades.html?op=Alquiler">Alquilar</a>
     <a class="nav__link" href="#nosotros">Nosotros</a>
     <a class="nav__link" href="#servicios">Servicios</a>
     <a class="nav__link" href="#contacto">Contacto</a>
-    <a class="nav__link btn btn--accent nav__cta" data-wa="Hola Guillermo Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+    <a class="nav__link" href="favoritos.html">♡ Favoritos<span data-fav-count></span></a>
+    <a class="nav__link btn btn--accent nav__cta" data-wa="Hola Marcelo Ragonese Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
   </div>
-  <button class="nav__burger" aria-label="Menú">☰</button>
+  <button class="nav__burger" aria-label="Menú" aria-expanded="false"><i></i><i></i><i></i></button>
 </nav>
 
 <!-- MENÚ MOBILE -->
@@ -39,15 +41,16 @@
   <a href="#nosotros">Nosotros</a>
   <a href="#servicios">Servicios</a>
   <a href="#contacto">Contacto</a>
-  <a class="btn btn--accent" data-wa="Hola Guillermo Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
+  <a href="favoritos.html">♡ Favoritos<span data-fav-count></span></a>
+  <a class="btn btn--accent" data-wa="Hola Marcelo Ragonese Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad</a>
 </div>
 
 <!-- HERO -->
 <header class="hero">
   <div class="hero__inner">
-    <div class="eyebrow hero__eyebrow">Inmobiliaria en Zona Oeste · Mat. 1322</div>
+    <div class="eyebrow hero__eyebrow">Ramos Mejía · Zona Oeste</div>
     <h1>Tu próximo hogar<br>tiene una <em>dirección</em>.</h1>
-    <p class="hero__sub">Compramos, vendemos, alquilamos y tasamos propiedades en Santos Lugares y toda la Zona Oeste. Asesoramiento personalizado, de principio a fin.</p>
+    <p class="hero__sub">Vendemos, tasamos, alquilamos y administramos propiedades en Ramos Mejía y toda la Zona Oeste. Asesoramiento personalizado, de principio a fin.</p>
 
     <form id="hero-search" class="search" onsubmit="return false">
       <div class="search__tabs">
@@ -56,9 +59,9 @@
       </div>
       <div class="search__row">
         <div class="field"><label for="hs-tipo">Tipo</label>
-          <select id="hs-tipo"><option value="">Todos</option><option>Departamento</option><option>Casa</option><option>PH</option><option>Terreno</option><option>Local</option><option>Oficina</option></select></div>
+          <select id="hs-tipo"><option value="">Todos</option><option>Departamento</option><option>Casa</option><option>Chalet</option><option>PH</option><option>Dúplex</option><option>Tríplex</option><option>Terreno</option><option>Lote</option><option>Local</option><option>Salón</option><option>Oficina</option></select></div>
         <div class="field"><label for="hs-zona">Zona</label>
-          <select id="hs-zona"><option value="">Todas</option><option>Santos Lugares</option><option>Caseros</option><option>San Martín</option><option>Francisco Álvarez</option></select></div>
+          <select id="hs-zona"><option value="">Todas</option><option>Ramos Mejía</option><option>Villa Luzuriaga</option><option>Caseros</option><option>San Martín</option><option>Francisco Álvarez</option><option>Ituzaingó</option><option>Haedo</option></select></div>
         <div class="field"><label for="hs-amb">Ambientes</label>
           <select id="hs-amb"><option value="">Todos</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select></div>
         <button type="button" class="search__btn"><span style="font-size:17px">⌕</span>Buscar</button>
@@ -66,9 +69,7 @@
     </form>
 
     <div class="trust">
-      <div class="trust__item"><span class="trust__num">+20</span><span class="trust__label">Años en la zona</span></div>
-      <div class="trust__sep"></div>
-      <div class="trust__item"><span class="trust__num">Mat. 1322</span><span class="trust__label">Colegio de San Martín</span></div>
+      <div class="trust__item"><span class="trust__num">Mat. 070 - 1160</span><span class="trust__label">Colegio Martillero de La Matanza</span></div>
       <div class="trust__sep"></div>
       <div class="trust__item"><span class="trust__num">100%</span><span class="trust__label">Atención personalizada</span></div>
     </div>
@@ -92,10 +93,10 @@
   <div class="about__media reveal"><img src="assets/zona-oeste.png" alt="Zona Oeste a vista de pájaro" loading="lazy"></div>
   <div class="reveal">
     <div class="eyebrow">Sobre nosotros</div>
-    <h2>Conocemos cada calle<br>de la Zona Oeste.</h2>
-    <p>Guillermo Propiedades nació en Santos Lugares con una idea simple: tratar cada operación como si fuera propia. Más de dos décadas acompañando a familias a comprar, vender y alquilar en Tres de Febrero y alrededores.</p>
+    <h2>Conocemos cada calle<br>de Zona Oeste.</h2>
+    <p>Marcelo Ragonese Propiedades nació en Ramos Mejía con una idea simple: tratar cada operación como si fuera propia.</p>
     <div class="about__feats">
-      <div class="feat"><span class="feat__ico">◆</span><div><div class="feat__t">Trayectoria</div><div class="feat__d">Matrícula 1322 · Colegio de San Martín.</div></div></div>
+      <div class="feat"><span class="feat__ico">◆</span><div><div class="feat__t">Trayectoria</div><div class="feat__d">Matrícula 070 - 1160 · Colegio Martillero de La Matanza.</div></div></div>
       <div class="feat"><span class="feat__ico">◆</span><div><div class="feat__t">Cercanía</div><div class="feat__d">Atención directa, sin intermediarios.</div></div></div>
       <div class="feat"><span class="feat__ico">◆</span><div><div class="feat__t">Conocimiento local</div><div class="feat__d">Valuaciones con datos reales de la zona.</div></div></div>
       <div class="feat"><span class="feat__ico">◆</span><div><div class="feat__t">Transparencia</div><div class="feat__d">Información clara en cada paso.</div></div></div>
@@ -122,7 +123,6 @@
 <section class="stats">
   <div class="stats__grid">
     <div class="reveal"><div class="stat__num"><span data-count="320" data-suffix="+">0+</span></div><div class="stat__label">Propiedades publicadas</div></div>
-    <div class="reveal"><div class="stat__num"><span data-count="20" data-suffix="+">0+</span></div><div class="stat__label">Años de experiencia</div></div>
     <div class="reveal"><div class="stat__num"><span data-count="850" data-suffix="+">0+</span></div><div class="stat__label">Operaciones realizadas</div></div>
     <div class="reveal"><div class="stat__num"><span data-count="1500" data-suffix="+">0+</span></div><div class="stat__label">Familias asesoradas</div></div>
   </div>
@@ -152,23 +152,37 @@
       <h2 class="section-title">Lo que dicen las familias</h2>
     </div>
     <div class="tgrid">
-      <div class="testi reveal"><div class="testi__stars">★★★★★</div><p class="testi__quote">Vendimos nuestro departamento en Santos Lugares más rápido de lo que esperábamos. Trato humano y muy claro.</p><div class="testi__who"><div class="testi__ava"></div><div><div class="testi__name">Marcela R.</div><div class="testi__role">Vendió en Santos Lugares</div></div></div></div>
+      <div class="testi reveal"><div class="testi__stars">★★★★★</div><p class="testi__quote">Vendimos nuestro departamento en Ramos Mejía más rápido de lo que esperábamos. Trato humano y muy claro.</p><div class="testi__who"><div class="testi__ava"></div><div><div class="testi__name">Marcela R.</div><div class="testi__role">Vendió en Ramos Mejía</div></div></div></div>
       <div class="testi reveal"><div class="testi__stars">★★★★★</div><p class="testi__quote">Nos ayudaron a comprar nuestra primera casa. Nos explicaron cada paso con paciencia. Recomendables.</p><div class="testi__who"><div class="testi__ava"></div><div><div class="testi__name">Diego y Lucía</div><div class="testi__role">Compraron en Caseros</div></div></div></div>
       <div class="testi reveal"><div class="testi__stars">★★★★★</div><p class="testi__quote">La tasación fue precisa y honesta. Se nota que conocen la zona de verdad.</p><div class="testi__who"><div class="testi__ava"></div><div><div class="testi__name">Jorge M.</div><div class="testi__role">Tasación en San Martín</div></div></div></div>
     </div>
   </div>
 </section>
 
-<!-- CTA VENDER -->
-<section class="section">
-  <div class="cta-band reveal">
-    <div class="cta-band__inner">
-      <div class="eyebrow" style="color:var(--accent)">¿Pensás en vender?</div>
-      <h2>Tasá tu propiedad<br>sin costo ni compromiso.</h2>
-      <p>Te damos un valor real de mercado con datos concretos de la Zona Oeste y una estrategia clara para vender bien.</p>
-      <div class="cta-band__row">
-        <a class="btn btn--accent" data-wa="Hola Guillermo Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad →</a>
-        <a class="btn btn--ghost" href="#contacto">Hablar con un asesor</a>
+<!-- CTA VENDER / ALQUILAR -->
+<section class="section section--tight">
+  <div class="cta-pair">
+    <div class="cta-band reveal">
+      <div class="cta-band__inner">
+        <div class="eyebrow" style="color:var(--accent)">¿Pensás en vender?</div>
+        <h2>Tasá tu propiedad<br>sin costo ni compromiso.</h2>
+        <p>Te damos un valor real de mercado con datos concretos de la Zona Oeste y una estrategia clara para vender bien.</p>
+        <div class="cta-band__row">
+          <a class="btn btn--accent" data-wa="Hola Marcelo Ragonese Propiedades, quiero tasar mi propiedad." target="_blank">Tasá tu propiedad →</a>
+          <a class="btn btn--ghost" href="#contacto">Hablar con un asesor</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-band cta-band--light reveal">
+      <div class="cta-band__inner">
+        <div class="eyebrow">¿Querés alquilar tu propiedad?</div>
+        <h2>Administramos y publicamos<br>tu propiedad.</h2>
+        <p>Te acompañamos desde la publicación hasta la selección del inquilino, con una mirada clara, ordenada y cercana.</p>
+        <div class="cta-band__row">
+          <a class="btn btn--dark" data-wa="Hola Marcelo Ragonese Propiedades, quiero alquilar mi propiedad." target="_blank">Quiero alquilar mi propiedad</a>
+          <a class="btn btn--ghost-dark" href="propiedades.html?op=Alquiler">Ver propiedades en alquiler</a>
+        </div>
       </div>
     </div>
   </div>
@@ -180,12 +194,11 @@
     <div class="eyebrow">Contacto</div>
     <h2>Hablemos de<br>tu propiedad.</h2>
     <div class="cinfo">
-      <div class="cinfo__item"><span class="cinfo__ico">⌖</span><div><div class="cinfo__k">Dirección</div><div class="cinfo__v">Marcos Sastre 87 · Haedo</div></div></div>
-      <div class="cinfo__item"><span class="cinfo__ico">☎</span><div><div class="cinfo__k">Teléfono</div><div class="cinfo__v">4712-0868 · 11 3628-1168</div></div></div>
-      <div class="cinfo__item"><span class="cinfo__ico">✉</span><div><div class="cinfo__k">Email</div><div class="cinfo__v"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3651435f5a5a53445b59464459465f535257525345765e59425b575f5a1855595b">[email&#160;protected]</a></div></div></div>
+      <div class="cinfo__item"><span class="cinfo__ico">⌖</span><div><div class="cinfo__k">Dirección</div><div class="cinfo__v">Bolívar 699, Ramos Mejía</div></div></div>
+      <div class="cinfo__item"><span class="cinfo__ico">☎</span><div><div class="cinfo__k">Teléfono</div><div class="cinfo__v">+54 9 11 4673 8707</div></div></div>
+      <div class="cinfo__item"><span class="cinfo__ico">✉</span><div><div class="cinfo__k">Email</div><div class="cinfo__v"><a href="mailto:marceloragonesepropiedades@gmail.com">marceloragonesepropiedades@gmail.com</a></div></div></div>
       <div class="cinfo__item"><span class="cinfo__ico">◷</span><div><div class="cinfo__k">Horarios</div><div class="cinfo__v">Lun a Vie 9–18h · Sáb 9–13h</div></div></div>
     </div>
-    <div class="map"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Marcos%20Sastre%2087%20Haedo&output=embed"></iframe></div>
   </div>
   <form class="form reveal" id="contact-form">
     <div class="form__row">
@@ -196,7 +209,7 @@
     <label><span>Motivo</span><select name="motivo"><option>Quiero vender</option><option>Quiero tasar</option><option>Quiero alquilar mi propiedad</option><option>Busco comprar</option><option>Busco alquilar</option><option>Administración</option><option>Otro</option></select></label>
     <label><span>Mensaje</span><textarea name="mensaje" rows="3" placeholder="Contanos en qué te ayudamos"></textarea></label>
     <button type="submit" class="btn btn--dark btn--block" style="padding:16px">Enviar consulta</button>
-    <p class="form__note">O escribinos por <a data-wa="Hola Guillermo Propiedades, quería hacer una consulta." target="_blank">WhatsApp →</a></p>
+    <p class="form__note">O escribinos por <a data-wa="Hola Marcelo Ragonese Propiedades, quería hacer una consulta." target="_blank">WhatsApp →</a></p>
   </form>
 </section>
 
@@ -204,10 +217,10 @@
 <footer class="footer">
   <div class="footer__grid">
     <div>
-      <span class="footer__logo"><img src="assets/logo.png" alt="Guillermo Propiedades"></span>
-      <p>Negocios inmobiliarios en Santos Lugares y toda la Zona Oeste. Venta, alquiler, tasaciones y administración con atención personalizada.</p>
+      <span class="footer__logo"><img src="assets/logo.png?v=20260905" alt="Marcelo Ragonese Propiedades"></span>
+      <p>Negocios inmobiliarios en Ramos Mejía y toda la Zona Oeste. Venta, alquiler, tasaciones y administración con atención personalizada.</p>
       <div class="footer__soc">
-        <a data-wa="Hola Guillermo Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp">✆</a>
+        <a data-wa="Hola Marcelo Ragonese Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01A9.816 9.816 0 0 0 12.04 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.23 8.25-8.23m-4.52 4.7c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9 0 1.12.82 2.21.93 2.36.11.15 1.6 2.44 3.93 3.42 1.95.82 2.35.66 2.77.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.27-.23-.12-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.1-.1.23-.27.34-.4.11-.14.15-.23.23-.39.08-.15.04-.29-.02-.41-.06-.11-.51-1.24-.71-1.7-.19-.44-.38-.39-.53-.4-.14-.01-.29-.01-.44-.01z"/></svg></a>
         <a data-ig target="_blank" aria-label="Instagram">IG</a>
       </div>
     </div>
@@ -224,17 +237,35 @@
     <div>
       <div class="footer__h">Contacto</div>
       <div class="footer__col">
-        <span>Marcos Sastre 87<br>Haedo</span>
-        <span>4712-0868 · 11 3628-1168</span>
-        <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6b79656060697e61637c7e637c6569686d68697f4c646378616d6560226f6361">[email&#160;protected]</a></span>
+        <span>Bolívar 699, Ramos Mejía</span>
+        <span>+54 9 11 4673 8707</span>
+        <span><a href="mailto:marceloragonesepropiedades@gmail.com">marceloragonesepropiedades@gmail.com</a></span>
       </div>
     </div>
   </div>
-  <div class="footer__bar"><div><span>© 2026 Guillermo Propiedades. Todos los derechos reservados.</span><span>Colegio de San Martín · Matrícula 1322</span></div></div>
+  <div class="footer__bar"><div><span>© 2026 Marcelo Ragonese Propiedades. Todos los derechos reservados.</span><span>Colegio Martillero de La Matanza · Matrícula 070 - 1160</span></a></div>
 </footer>
 
-<a class="wa-float" data-wa="Hola Guillermo Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp">✆</a>
+<a class="wa-float" data-wa="Hola Marcelo Ragonese Propiedades, quería hacer una consulta." target="_blank" aria-label="WhatsApp"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01A9.816 9.816 0 0 0 12.04 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.23 8.25-8.23m-4.52 4.7c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9 0 1.12.82 2.21.93 2.36.11.15 1.6 2.44 3.93 3.42 1.95.82 2.35.66 2.77.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.27-.23-.12-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.1-.1.23-.27.34-.4.11-.14.15-.23.23-.39.08-.15.04-.29-.02-.41-.06-.11-.51-1.24-.71-1.7-.19-.44-.38-.39-.53-.4-.14-.01-.29-.01-.44-.01z"/></svg></a>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./script/script.js"></script>
+<!-- ASISTENTE IA -->
+<div class="ai-chat" data-ai-chat hidden>
+  <button class="ai-chat__toggle" data-ai-toggle type="button" aria-label="Abrir asistente de Marcelo Ragonese Propiedades" aria-expanded="false">💬</button>
+  <div class="ai-chat__panel" data-ai-panel>
+    <div class="ai-chat__head">
+      <div><strong>Asistente virtual</strong><span class="ai-chat__status">Marcelo Ragonese Propiedades</span></div>
+      <button class="ai-chat__close" data-ai-close type="button" aria-label="Cerrar chat">✕</button>
+    </div>
+    <div class="ai-chat__messages" data-ai-messages aria-live="polite"></div>
+    <div class="ai-chat__lead" data-ai-lead hidden></div>
+    <form class="ai-chat__form" data-ai-form>
+      <input type="text" data-ai-input placeholder="Escribí tu consulta…" maxlength="600" autocomplete="off">
+      <button type="submit" aria-label="Enviar mensaje">➤</button>
+    </form>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./script/script.js?v=20260925"></script>
+<script src="./script/chat.js?v=20260918"</script>
 </body>
 </html>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "inmobiliaria-php",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8899", "-t", "."],
+      "port": 8899
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+api/config.php
+deploy_pkg/
+
+# api/data/ guarda contenido real (propiedades.json) que SÍ se versiona,
+# pero no lo que se genera solo en el servidor:
+api/data/leads.jsonl
+api/data/ratelimit/
+api/data/meli_tokens.json
+api/data/admin_login.json
+
+# Secretos y datos reales: viven solo en el servidor / se copian a mano (ver guía de migración)
+alquileres/config.php
+alquileres/data/
+seguridad/data/
+api/data/propiedades.json
+# Fotos de las propiedades (pesadas): están en el servidor
+assets/propiedades/
+# Copias de trabajo de Claude Code
+.claude/worktrees/
