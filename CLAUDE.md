@@ -27,7 +27,9 @@ Sitio web + paneles internos de una inmobiliaria (cliente: Marcelo Ragonese, mar
 
 ## Publicación (método seguro: un archivo por vez)
 
-Se usa el conector MCP de Hostinger (`hostinger-hosting-mcp`, instalado con `npm install -g hostinger-api-mcp`; la primera vez y cuando vence la sesión pide iniciar sesión por navegador — lo hace el usuario).
+Se usa el conector MCP de Hostinger (`hostinger-hosting-mcp`, instalado con `npm install -g hostinger-api-mcp`; requiere Node 24+; la primera vez y cuando vence la sesión pide iniciar sesión por navegador con `hostinger-hosting-mcp --login` — lo hace el usuario).
+
+**Versión nueva del conector (desde 2026-10):** ya no expone una herramienta por operación sino solo `search`, `execute` y `multi-execute`. Se busca la operación con `search` y se corre con `execute { operation, params }`. Equivalencias: `hosting_listWebsitesV1` → `hosting_websites_list`; `hosting_generateUploadURLV1` → `hosting_files_generate-upload-url`; `hosting_getWebsiteFileContentV1` → `hosting_files_website-content`; `hosting_deployStaticWebsite` → `hosting_deploy-static-website` (**sigue prohibida**, igual que `hosting_websites_deploy-static-site-archive`).
 
 1. `hosting_generateUploadURLV1` (usuario y dominio del hosting) devuelve URL TUS + claves.
 2. Por cada archivo: `POST` a `{url}/{ruta/relativa}?override=true` con `Upload-Length`, `Upload-Offset: 0` y `Tus-Resumable: 1.0.0`; luego `PATCH` con los bytes (`Content-Type: application/offset+octet-stream`).
