@@ -129,6 +129,10 @@ function admin_video_thumb(string $url): ?string
       <div class="field"><label>Cantidad de plantas</label><input type="number" name="carac_pisos" min="0" value="<?= admin_html(carac_valor_num($p, 'Cantidad de pisos')) ?>"></div>
     </div>
     <div class="row3">
+      <div class="field"><label>Medida de lote · Frente (m)</label><input type="number" name="carac_lote_frente" min="0" step="0.01" value="<?= admin_html(carac_valor_decimal($p, 'Metros de frente')) ?>" placeholder="Ej: 8.66"></div>
+      <div class="field"><label>Medida de lote · Fondo (m)</label><input type="number" name="carac_lote_fondo" min="0" step="0.01" value="<?= admin_html(carac_valor_decimal($p, 'Metros de fondo')) ?>" placeholder="Ej: 30"></div>
+    </div>
+    <div class="row3">
       <div class="field"><label>Disposición</label>
         <select name="carac_disposicion">
           <option value="">— Sin especificar —</option>

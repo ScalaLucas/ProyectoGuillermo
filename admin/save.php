@@ -59,6 +59,14 @@ if (($v = $carNum('carac_bauleras')) > 0) $caracteristicas['Principales']['Baule
 if (($v = $carNum('carac_antiguedad')) > 0) $caracteristicas['Principales']['Antigüedad'] = $v . ' años';
 if (($v = $carNum('carac_expensas')) > 0) $caracteristicas['Principales']['Expensas'] = number_format($v, 0, ',', '.') . ' ARS';
 if (($v = $carNum('carac_pisos')) > 0) $caracteristicas['Principales']['Cantidad de pisos'] = (string)$v;
+// Medida de lote en metros (con decimales). Los nombres coinciden con los de Mercado Libre ("Metros de frente" / "Metros de fondo"), así se sincronizan por nombre.
+$carMetros = function (string $nombre): string {
+    $n = str_replace(',', '.', trim((string)($_POST[$nombre] ?? '')));
+    if (!is_numeric($n) || (float)$n <= 0) return '';
+    return rtrim(rtrim(number_format(min((float)$n, 99999), 2, '.', ''), '0'), '.') . ' m';
+};
+if (($v = $carMetros('carac_lote_frente')) !== '') $caracteristicas['Principales']['Metros de frente'] = $v;
+if (($v = $carMetros('carac_lote_fondo')) !== '') $caracteristicas['Principales']['Metros de fondo'] = $v;
 
 $carSel = fn(string $nombre) => trim((string)($_POST[$nombre] ?? ''));
 if (($v = $carSel('carac_disposicion')) !== '') $caracteristicas['Principales']['Disposición'] = $v;
