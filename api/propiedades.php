@@ -26,12 +26,6 @@ function wm_ruta_original(string $archivo): ?string
     return is_file($ruta) ? $ruta : null;
 }
 
-function wm_version_url(string $archivo): string
-{
-    $ruta = wm_ruta_original($archivo);
-    return substr(md5(WM_VERSION . ($ruta ? filemtime($ruta) . filesize($ruta) : '')), 0, 8);
-}
-
 function wm_capa_logo($logo, int $ancho, float $op, array $rgb)
 {
     $w = imagesx($logo); $h = imagesy($logo); $alto = max(1, (int)round($h * $ancho / $w));
@@ -76,22 +70,29 @@ function wm_generar(string $orig, string $ext, string $destino): bool
     return false;
 }
 
+function wm_dir_web(): string { return __DIR__ . '/../assets/wm-' . WM_VERSION; }
+
+// Cada foto con marca queda como archivo estático en assets/wm-<versión>/ (lo sirve el hosting directo,
+// rápido y con caché). Esta función la genera la primera vez que alguien la pide.
 function wm_servir(string $archivo): void
 {
     $orig = wm_ruta_original($archivo);
     if (!$orig) { http_response_code(404); exit; }
     $ext = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
     $mime = $ext === 'webp' ? 'image/webp' : ($ext === 'png' ? 'image/png' : 'image/jpeg');
-    $dir = __DIR__ . '/data/wm-cache';
-    $clave = md5(WM_VERSION . $archivo . filemtime($orig) . filesize($orig) . @filemtime(__DIR__ . '/../assets/logo.png'));
-    $cache = $dir . '/' . $clave . '.' . $ext;
+    $dir = wm_dir_web();
+    $web = $dir . '/' . $archivo;
     $usar = $orig;
     try {
-        if (!is_file($cache)) {
+        if (!is_file($web)) {
             if (!is_dir($dir)) @mkdir($dir, 0755, true);
-            if (is_dir($dir) && is_writable($dir)) wm_generar($orig, $ext, $cache);
+            if (is_dir($dir) && is_writable($dir)) {
+                // copia de la primera versión de caché si existe (evita regenerar)
+                $viejo = __DIR__ . '/data/wm-cache/' . md5('v1' . $archivo . filemtime($orig) . filesize($orig) . @filemtime(__DIR__ . '/../assets/logo.png')) . '.' . $ext;
+                if (WM_VERSION !== 'v1' || !is_file($viejo) || !@copy($viejo, $web)) wm_generar($orig, $ext, $web);
+            }
         }
-        if (is_file($cache)) $usar = $cache;
+        if (is_file($web)) $usar = $web;
     } catch (Throwable $e) { $usar = $orig; }
     header('Content-Type: ' . $mime);
     header('Cache-Control: public, max-age=2592000');
@@ -119,9 +120,10 @@ $publicas = array_map(function ($p) {
         $p['fotos'] = array_map(function ($f) {
             if (!is_string($f) || strpos($f, 'assets/propiedades/') !== 0) return $f;
             $archivo = basename($f);
-            return wm_ruta_original($archivo)
-                ? 'api/propiedades.php?foto=' . rawurlencode($archivo) . '&v=' . wm_version_url($archivo)
-                : $f;
+            if (!preg_match('/^[A-Za-z0-9._-]+.(webp|jpe?g|png)$/i', $archivo)) return $f;
+            if (is_file(wm_dir_web() . '/' . $archivo)) return 'assets/wm-' . WM_VERSION . '/' . rawurlencode($archivo);
+            if (!wm_ruta_original($archivo)) return $f;
+            return 'api/propiedades.php?foto=' . rawurlencode($archivo);
         }, $p['fotos']);
     }
     return $p;

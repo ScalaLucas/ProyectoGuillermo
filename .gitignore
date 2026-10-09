@@ -20,3 +20,4 @@ assets/propiedades/
 
 # Caché de fotos con marca de agua (se regenera sola)
 api/data/wm-cache/
+assets/wm-*/
