@@ -48,6 +48,7 @@ Notas: sobreescribir archivos existentes funciona siempre. **Crear un archivo nu
 
 - `api/propiedades.php` entrega solo las propiedades activas con fotos. Filtros y zonas del sitio salen de los datos reales.
 - `api/lead.php` recibe consultas del sitio. `api/chat.php` + `script/chat.js`: asistente IA (Gemini, con reintentos y mensaje amable si hay demasiada demanda).
+- **Marca de agua en las fotos de la web** (logo MR centrado, tenue, ~46 % del ancho; constantes `WM_*` en `api/propiedades.php`). Las fotos originales de `assets/propiedades/` **no se modifican**. `api/propiedades.php` reescribe cada ruta de foto a `api/propiedades.php?foto=ARCHIVO&v=HASH`; la primera vez se genera la copia con GD y queda en `api/data/wm-cache/` (se regenera sola si cambia la foto, el logo o `WM_VERSION`). Si algo falla se sirve la original. Toda foto nueva subida desde el panel la recibe automáticamente. El JSON guardado, el panel y **Mercado Libre siguen usando las originales sin marca** (ML suele rechazar marcas de agua; si se quisiera probar en ML hay que cambiar `meli.php`). Para cambiar el estilo: editar `WM_*` y subir `WM_VERSION`. Las propiedades migradas de Urbano ya traían su propia marca en la foto original.
 - Nombre comercial unificado: **Marcelo Ragonese Propiedades** (no "Inmobiliaria"). Dirección: Bolívar 699, Ramos Mejía.
 
 ## Integración con Mercado Libre (`api/meli.php`)

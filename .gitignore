@@ -17,3 +17,6 @@ api/data/propiedades.json
 assets/propiedades/
 # Copias de trabajo de Claude Code
 .claude/worktrees/
+
+# Caché de fotos con marca de agua (se regenera sola)
+api/data/wm-cache/
