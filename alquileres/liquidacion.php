@@ -9,7 +9,9 @@ $por = [];
 foreach ($contratos as $c) {
     foreach ($c['cobros'] ?? [] as $co) {
         if (substr($co['fecha'], 0, 7) !== $mes) continue;
-        $k = mb_strtolower(trim($c['propietario']['nombre'] ?? '?'));
+        $mo = alq_moneda($c);
+        $k = mb_strtolower(trim($c['propietario']['nombre'] ?? '?')) . '|' . $mo;
+        $por[$k]['mon'] = $mo;
         $por[$k]['nombre'] = $c['propietario']['nombre'] ?? '?';
         $por[$k]['cbu'] = $c['propietario']['cbu'] ?? '';
         $com = round((float)$co['monto'] * ((float)($c['comision'] ?? 0) / 100), 2);
@@ -25,11 +27,11 @@ alq_cabecera('Liquidaciones', 'liquidacion.php');
 <h2 style="margin-top:0"><?= h(periodo_es($mes)) ?></h2>
 <?php if (!$por): ?><div class="card hint">No hay cobros registrados en este mes.</div><?php endif; ?>
 <?php foreach ($por as $g): $bruto = 0; $comT = 0; $extra = 0; ?>
-<div class="card" style="page-break-inside:avoid"><b style="font-size:17px"><?= h($g['nombre']) ?></b><?= $g['cbu'] ? ' <span class="hint">· CBU/Alias: ' . h($g['cbu']) . '</span>' : '' ?>
+<div class="card" style="page-break-inside:avoid"><b style="font-size:17px"><?= h($g['nombre']) ?></b><?= $g['mon'] === 'USD' ? ' <span class="badge b-mut">en dólares</span>' : '' ?><?= $g['cbu'] ? ' <span class="hint">· CBU/Alias: ' . h($g['cbu']) . '</span>' : '' ?>
 <div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Propiedad</th><th>Inquilino</th><th>Período</th><th class="r">Alquiler cobrado</th><th class="r">Comisión</th><th class="r">Neto propietario</th></tr></thead><tbody>
 <?php foreach ($g['filas'] as $f): $m = (float)$f['co']['monto']; $bruto += $m; $comT += $f['com']; ?>
-<tr><td><?= h($f['c']['propiedad_txt']) ?></td><td><?= h($f['c']['inquilino']['nombre'] ?? '') ?></td><td><?= h(periodo_es($f['co']['periodo'])) ?></td><td class="r"><?= h(dinero($m)) ?></td><td class="r"><?= h(dinero($f['com'])) ?> <span class="hint">(<?= h(rtrim(rtrim(number_format((float)$f['c']['comision'], 2, ',', ''), '0'), ',')) ?>%)</span></td><td class="r"><?= h(dinero($m - $f['com'])) ?></td></tr>
+<tr><td><?= h($f['c']['propiedad_txt']) ?></td><td><?= h($f['c']['inquilino']['nombre'] ?? '') ?></td><td><?= h(periodo_es($f['co']['periodo'])) ?></td><td class="r"><?= h(dinero($m, $g['mon'])) ?></td><td class="r"><?= h(dinero($f['com'], $g['mon'])) ?> <span class="hint">(<?= h(rtrim(rtrim(number_format((float)$f['c']['comision'], 2, ',', ''), '0'), ',')) ?>%)</span></td><td class="r"><?= h(dinero($m - $f['com'], $g['mon'])) ?></td></tr>
 <?php endforeach; ?>
-<tr><th colspan="3">Total</th><th class="r"><?= h(dinero($bruto)) ?></th><th class="r"><?= h(dinero($comT)) ?></th><th class="r"><?= h(dinero($bruto - $comT)) ?></th></tr>
+<tr><th colspan="3">Total</th><th class="r"><?= h(dinero($bruto, $g['mon'])) ?></th><th class="r"><?= h(dinero($comT, $g['mon'])) ?></th><th class="r"><?= h(dinero($bruto - $comT, $g['mon'])) ?></th></tr>
 </tbody></table></div></div>
 <?php endforeach; alq_pie();

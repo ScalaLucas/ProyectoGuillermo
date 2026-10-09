@@ -12,14 +12,13 @@ $descIt = alq_descuentos_items($co);
 $totalExtras = array_sum(array_column($extrasIt, 'monto'));
 $totalDescuentos = array_sum(array_column($descIt, 'monto'));
 $total = (float)$co['monto'] + $totalExtras - $totalDescuentos;
-$enteros = (int)floor($total);
-$cent = (int)round(($total - $enteros) * 100);
-$letras = ucfirst(alq_letras($enteros)) . ' pesos' . ($cent ? ' con ' . str_pad((string)$cent, 2, '0', STR_PAD_LEFT) . '/100' : '');
+$mon = alq_moneda($c);
+$letras = alq_monto_letras($total, $mon);
 
 $conceptoLineas = [];
-$conceptoLineas[] = 'Alquiler de ' . $c['propiedad_txt'] . ', período ' . periodo_es($co['periodo']) . ': ' . dinero($co['monto']) . '.';
-foreach ($extrasIt as $it) $conceptoLineas[] = ucfirst($it['concepto']) . ': ' . dinero($it['monto']) . '.';
-foreach ($descIt as $it) $conceptoLineas[] = 'Descuento ' . $it['concepto'] . ': −' . dinero($it['monto']) . '.';
+$conceptoLineas[] = 'Alquiler de ' . $c['propiedad_txt'] . ', período ' . periodo_es($co['periodo']) . ': ' . dinero($co['monto'], $mon) . '.';
+foreach ($extrasIt as $it) $conceptoLineas[] = ucfirst($it['concepto']) . ': ' . dinero($it['monto'], $mon) . '.';
+foreach ($descIt as $it) $conceptoLineas[] = 'Descuento ' . $it['concepto'] . ': −' . dinero($it['monto'], $mon) . '.';
 $conceptoLineas[] = 'Forma de pago: ' . $co['medio'] . '.' . (!empty($co['nota']) ? ' ' . $co['nota'] : '');
 $conceptoLineas[] = 'Propietario: ' . ($c['propietario']['nombre'] ?? '') . ' — Contrato ' . $c['id'] . '.';
 
@@ -28,7 +27,7 @@ $datosBase = [
     'numero' => $numero, 'fecha' => $co['fecha'], 'nombre' => $c['inquilino']['nombre'] ?? '',
     'dni' => $c['inquilino']['dni'] ?? '', 'domicilio' => $c['inquilino']['domicilio'] ?? '',
     'localidad' => '', 'tel' => $c['inquilino']['tel'] ?? '',
-    'monto' => $total, 'letras' => $letras, 'concepto' => implode("\n", $conceptoLineas),
+    'monto' => $total, 'moneda' => $mon, 'letras' => $letras, 'concepto' => implode("\n", $conceptoLineas),
 ];
 $copias = ['ORIGINAL — para el inquilino', 'DUPLICADO — para la inmobiliaria'];
 ?><!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Recibo <?= $numero ?></title>

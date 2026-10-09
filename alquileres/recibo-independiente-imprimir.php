@@ -9,7 +9,7 @@ $numero = $r['serie'] . '-' . str_pad((string)$r['numero'], 6, '0', STR_PAD_LEFT
 $datosBase = [
     'numero' => $numero, 'fecha' => $r['fecha'], 'nombre' => $r['nombre'], 'dni' => $r['dni'] ?: '',
     'domicilio' => '', 'localidad' => '', 'tel' => '',
-    'monto' => $total, 'letras' => ri_monto_letras($total), 'concepto' => $r['concepto'],
+    'monto' => $total, 'moneda' => alq_moneda($r['moneda'] ?? 'ARS'), 'letras' => ri_monto_letras($total, alq_moneda($r['moneda'] ?? 'ARS')), 'concepto' => $r['concepto'],
 ];
 $copias = ['ORIGINAL', 'DUPLICADO'];
 ?><!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Recibo <?= h($numero) ?></title>

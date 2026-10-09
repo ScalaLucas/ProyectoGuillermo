@@ -62,6 +62,7 @@ Notas: sobreescribir archivos existentes funciona siempre. **Crear un archivo nu
 ## Panel de alquileres (`alquileres/`)
 
 - Datos en `alquileres/data/contratos.json` (+ backup diario, últimos 30). Núcleo en `alquileres/lib.php`. Lee propiedades de la web en solo lectura.
+- **Moneda**: cada contrato tiene `moneda` (`ARS` por defecto o `USD`; los contratos sin el campo siguen en pesos). Se elige en "Condiciones económicas"; todos los montos del contrato (alquiler, depósito, cobros, recibos, avisos, liquidación) se muestran en esa moneda con `dinero($n, $moneda)`. Totales del panel y liquidaciones van **separados por moneda** (`dinero_multi`). Ajuste automático en USD redondea al dólar entero (en pesos, al millar). No hay conversión ni cotización: un pago en pesos de un contrato en USD se carga ya convertido en dólares.
 - **Contratos**: partes (locador, locatario, 2 garantes + nota libre), vigencia, alquiler inicial, día de vencimiento, comisión, depósito, interés por mora (% diario), seguro (opcional), notas.
 - **Actualizaciones del alquiler**: ICL / IPC / CASA / Acuerdo se cargan a mano (por % **o directamente el nuevo alquiler**). "Porcentaje fijo" con % y frecuencia se aplica solo, compuesto, redondeado al millar (151.499 → 151.000; 151.501 → 152.000); un ajuste manual para el mismo mes tiene prioridad.
 - **Cobros**: un pago puede cubrir varios meses (un recibo por mes); conceptos extras múltiples (suman) y descuentos múltiples (restan, p. ej. expensas pagadas directo); si hay mora se sugiere el interés como concepto extra.

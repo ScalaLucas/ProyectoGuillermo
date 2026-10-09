@@ -111,6 +111,7 @@ function avisos_mensaje(string $tipo, array $c, string $dest, string $ref): ?arr
     $dir = avisos_limpio((string)($c['propiedad_txt'] ?? ''));
     $firma = "\n\nSaludos cordiales,\n" . ALQ_EMPRESA . "\n" . ALQ_TELEFONO;
     $hola = "Hola $nom,\n\n";
+    $dn = fn($n) => dinero($n, alq_moneda($c));
     switch ($tipo) {
         case 'recordatorio': case 'vencimiento': case 'mora':
             $per = $ref;
@@ -118,11 +119,11 @@ function avisos_mensaje(string $tipo, array $c, string $dest, string $ref): ?arr
             $venc = avisos_venc($c, $per);
             $pp = periodo_es($per);
             if ($tipo === 'recordatorio') return ["Recordatorio: el alquiler de $pp vence el " . fecha_es($venc),
-                $hola . "Te recordamos que el alquiler de $pp de $dir vence el " . fecha_es($venc) . ".\n\nMonto a abonar: " . dinero($falta) . "\n\nSi ya realizaste el pago, ignorá este mensaje o enviános el comprobante para registrarlo." . $firma];
+                $hola . "Te recordamos que el alquiler de $pp de $dir vence el " . fecha_es($venc) . ".\n\nMonto a abonar: " . $dn($falta) . "\n\nSi ya realizaste el pago, ignorá este mensaje o enviános el comprobante para registrarlo." . $firma];
             if ($tipo === 'vencimiento') return ["Vencimiento del alquiler de $pp",
-                $hola . "El alquiler de $pp de $dir " . (date('Y-m-d') > $venc ? 'venció el ' : 'vence hoy, ') . fecha_es($venc) . " y todavía no registramos el pago.\n\nMonto a abonar: " . dinero($falta) . "\n\nSi ya pagaste, enviános el comprobante para registrarlo." . $firma];
+                $hola . "El alquiler de $pp de $dir " . (date('Y-m-d') > $venc ? 'venció el ' : 'vence hoy, ') . fecha_es($venc) . " y todavía no registramos el pago.\n\nMonto a abonar: " . $dn($falta) . "\n\nSi ya pagaste, enviános el comprobante para registrarlo." . $firma];
             return ["Pago pendiente: alquiler de $pp",
-                $hola . "No registramos el pago del alquiler de $pp de $dir (venció el " . fecha_es($venc) . ").\n\nSaldo pendiente: " . dinero($falta) . "\n\nTe pedimos que lo regularices a la brevedad. Si ya pagaste, enviános el comprobante; si tenés alguna dificultad, comunicate con nosotros y lo vemos." . $firma];
+                $hola . "No registramos el pago del alquiler de $pp de $dir (venció el " . fecha_es($venc) . ").\n\nSaldo pendiente: " . $dn($falta) . "\n\nTe pedimos que lo regularices a la brevedad. Si ya pagaste, enviános el comprobante; si tenés alguna dificultad, comunicate con nosotros y lo vemos." . $firma];
         case 'mora_fiador':
             $per = $ref;
             $falta = max(0, alq_monto_periodo($c, $per) - alq_cobrado_periodo($c, $per));
@@ -132,36 +133,36 @@ function avisos_mensaje(string $tipo, array $c, string $dest, string $ref): ?arr
             $saludo = $dest === 'gar_txt' ? "Estimados,\n\n" : $hola;
             $calidad = $dest === 'gar_txt' ? 'garantía constituida' : 'fiador';
             return ["Aviso de mora — alquiler de $pp — $dir",
-                $saludo . "Les informamos, en su carácter de $calidad del contrato de locación de $dir, que $inq se encuentra en mora con el alquiler de $pp (venció el " . fecha_es($venc) . ").\n\nSaldo pendiente: " . dinero($falta) . "\n\nEste aviso se realiza a los efectos previstos en el contrato y no implica prórroga del plazo ni extingue la fianza." . $firma];
+                $saludo . "Les informamos, en su carácter de $calidad del contrato de locación de $dir, que $inq se encuentra en mora con el alquiler de $pp (venció el " . fecha_es($venc) . ").\n\nSaldo pendiente: " . $dn($falta) . "\n\nEste aviso se realiza a los efectos previstos en el contrato y no implica prórroga del plazo ni extingue la fianza." . $firma];
         case 'ajuste_prox':
             $pp = periodo_es($ref);
             $ind = ($c['ajuste_tipo'] ?? '') ?: 'el índice pactado';
             if ($dest === 'inq') return ["Tu alquiler se actualiza desde $pp",
-                $hola . "Según el contrato de $dir, a partir de $pp el alquiler se actualiza por $ind.\n\nAlquiler actual: " . dinero(alq_monto_actual($c)) . "\n\nCuando esté calculado te confirmamos el nuevo valor." . $firma];
+                $hola . "Según el contrato de $dir, a partir de $pp el alquiler se actualiza por $ind.\n\nAlquiler actual: " . $dn(alq_monto_actual($c)) . "\n\nCuando esté calculado te confirmamos el nuevo valor." . $firma];
             return ["Actualización próxima del alquiler de $dir",
-                $hola . "Te avisamos que a partir de $pp corresponde actualizar el alquiler de $dir por $ind (alquiler actual: " . dinero(alq_monto_actual($c)) . ").\n\nCalculamos el nuevo valor y te lo confirmamos." . $firma];
+                $hola . "Te avisamos que a partir de $pp corresponde actualizar el alquiler de $dir por $ind (alquiler actual: " . $dn(alq_monto_actual($c)) . ").\n\nCalculamos el nuevo valor y te lo confirmamos." . $firma];
         case 'cobro_ok':
             $co = avisos_cobro($c, $ref); if (!$co) return null;
             $pp = periodo_es($co['periodo']);
             $extrasIt = alq_extras_items($co);
             $descIt = alq_descuentos_items($co);
-            $extra = $extrasIt ? ' más ' . implode(' y ', array_map(fn($it) => dinero($it['monto']) . ' de ' . $it['concepto'], $extrasIt)) : '';
-            $extra .= $descIt ? ' menos ' . implode(' y ', array_map(fn($it) => dinero($it['monto']) . ' de ' . $it['concepto'], $descIt)) : '';
+            $extra = $extrasIt ? ' más ' . implode(' y ', array_map(fn($it) => $dn($it['monto']) . ' de ' . $it['concepto'], $extrasIt)) : '';
+            $extra .= $descIt ? ' menos ' . implode(' y ', array_map(fn($it) => $dn($it['monto']) . ' de ' . $it['concepto'], $descIt)) : '';
             $rec = str_pad((string)$co['recibo'], 6, '0', STR_PAD_LEFT);
             if ($dest === 'inq') return ["Recibimos tu pago — alquiler de $pp",
-                $hola . "Registramos tu pago del alquiler de $pp de $dir: " . dinero($co['monto']) . $extra . ", recibido el " . fecha_es($co['fecha']) . ".\n\nRecibo N° $rec.\n\n¡Muchas gracias!" . $firma];
+                $hola . "Registramos tu pago del alquiler de $pp de $dir: " . $dn($co['monto']) . $extra . ", recibido el " . fecha_es($co['fecha']) . ".\n\nRecibo N° $rec.\n\n¡Muchas gracias!" . $firma];
             $com = (float)($c['comision'] ?? 0);
             $neto = (float)$co['monto'] * (1 - $com / 100);
             return ["Cobramos el alquiler de $pp — $dir",
-                $hola . "Te avisamos que cobramos el alquiler de $pp de $dir: " . dinero($co['monto']) . ", recibido el " . fecha_es($co['fecha']) . ".\n\nRecibo N° $rec." . ($com > 0 ? "\nA liquidarte: " . dinero($neto) . " (alquiler menos comisión de administración del " . rtrim(rtrim(number_format($com, 2, ',', ''), '0'), ',') . "%)." : '') . $firma];
+                $hola . "Te avisamos que cobramos el alquiler de $pp de $dir: " . $dn($co['monto']) . ", recibido el " . fecha_es($co['fecha']) . ".\n\nRecibo N° $rec." . ($com > 0 ? "\nA liquidarte: " . $dn($neto) . " (alquiler menos comisión de administración del " . rtrim(rtrim(number_format($com, 2, ',', ''), '0'), ',') . "%)." : '') . $firma];
         case 'ajuste_ok':
             $a = avisos_ajuste($c, $ref); if (!$a) return null;
             $pp = periodo_es($a['desde']);
             $pct = number_format((float)$a['porcentaje'], 2, ',', '.');
             if ($dest === 'inq') return ["Nuevo valor de tu alquiler desde $pp",
-                $hola . "Aplicamos la actualización del alquiler de $dir ({$a['indice']}, $pct %).\n\nDesde $pp el alquiler pasa de " . dinero($a['monto_anterior']) . " a " . dinero($a['monto_nuevo']) . "." . $firma];
+                $hola . "Aplicamos la actualización del alquiler de $dir ({$a['indice']}, $pct %).\n\nDesde $pp el alquiler pasa de " . $dn($a['monto_anterior']) . " a " . $dn($a['monto_nuevo']) . "." . $firma];
             return ["Se actualizó el alquiler de $dir desde $pp",
-                $hola . "Aplicamos la actualización del alquiler de $dir ({$a['indice']}, $pct %).\n\nDesde $pp el alquiler pasa de " . dinero($a['monto_anterior']) . " a " . dinero($a['monto_nuevo']) . "." . $firma];
+                $hola . "Aplicamos la actualización del alquiler de $dir ({$a['indice']}, $pct %).\n\nDesde $pp el alquiler pasa de " . $dn($a['monto_anterior']) . " a " . $dn($a['monto_nuevo']) . "." . $firma];
     }
     return null;
 }

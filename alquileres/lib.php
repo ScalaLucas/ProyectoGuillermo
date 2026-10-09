@@ -13,7 +13,15 @@ define('PROPIEDADES_JSON', dirname(__DIR__) . '/api/data/propiedades.json');
 
 /* ---------- utilidades ---------- */
 function h($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-function dinero($n): string { return '$ ' . number_format((float)$n, 2, ',', '.'); }
+/** Moneda de un contrato (o código suelto): 'ARS' (pesos, por defecto) o 'USD' (dólares). */
+function alq_moneda($c = null): string {
+    $m = is_array($c) ? ($c['moneda'] ?? 'ARS') : (string)$c;
+    return strtoupper($m) === 'USD' ? 'USD' : 'ARS';
+}
+/** Formatea un monto con el símbolo de su moneda: "$ 150.000,00" o "US$ 800,00". */
+function dinero($n, ?string $moneda = 'ARS'): string {
+    return (alq_moneda($moneda) === 'USD' ? 'US$ ' : '$ ') . number_format((float)$n, 2, ',', '.');
+}
 function fecha_es(?string $ymd): string { return $ymd ? (new DateTimeImmutable($ymd))->format('d/m/Y') : '—'; }
 function periodo_es(string $p): string {
     $m = ['01'=>'Enero','02'=>'Febrero','03'=>'Marzo','04'=>'Abril','05'=>'Mayo','06'=>'Junio','07'=>'Julio','08'=>'Agosto','09'=>'Septiembre','10'=>'Octubre','11'=>'Noviembre','12'=>'Diciembre'];
@@ -106,6 +114,14 @@ function alq_fin(array $c): string {
 /** Alquiler vigente en un período 'YYYY-MM' (aplica los ajustes registrados). */
 /** Redondea un monto de alquiler al millar más cercano (151.499 → 151.000, 151.501 → 152.000). */
 function alq_redondear_mil(float $n): float { return round($n / 1000) * 1000; }
+/** Suma de montos por moneda → "$ 1.000,00 · US$ 500,00" (omite las monedas en cero; si todo es cero, pesos). */
+function dinero_multi(array $m): string {
+    $p = [];
+    foreach (['ARS', 'USD'] as $k) if (abs((float)($m[$k] ?? 0)) > 0.004) $p[] = dinero($m[$k], $k);
+    return $p ? implode(' · ', $p) : dinero(0);
+}
+/** Redondeo de los ajustes automáticos: al millar en pesos, al dólar entero en USD. */
+function alq_redondear_alq(float $n, string $moneda = 'ARS'): float { return alq_moneda($moneda) === 'USD' ? round($n) : alq_redondear_mil($n); }
 function alq_monto_periodo(array $c, string $periodo): float {
     $monto = (float)$c['monto_inicial'];
     $aj = alq_ajustes_efectivos($c);
@@ -133,7 +149,7 @@ function alq_ajustes_efectivos(array $c): array {
     $p = periodo_mas(substr($c['inicio'], 0, 7), $cada);
     $auto = [];
     while ($p <= $fin) {
-        $nuevo = alq_redondear_mil($monto * (1 + $pct / 100));
+        $nuevo = alq_redondear_alq($monto * (1 + $pct / 100), alq_moneda($c));
         $auto[$p] = ['desde' => $p, 'indice' => 'Porcentaje fijo', 'porcentaje' => $pct, 'monto_anterior' => $monto, 'monto_nuevo' => $nuevo, 'nota' => '', 'auto' => true];
         $monto = $nuevo;
         $p = periodo_mas($p, $cada);
@@ -287,6 +303,13 @@ function alq_siguiente_recibo(array $contratos): int {
 }
 
 /* ---------- número a letras (recibos) ---------- */
+/** Monto en letras con su moneda: "Ciento cincuenta mil pesos con 50/100" / "Ochocientos dólares estadounidenses". */
+function alq_monto_letras(float $total, string $moneda = 'ARS'): string {
+    $enteros = (int)floor($total);
+    $cent = (int)round(($total - $enteros) * 100);
+    $unidad = alq_moneda($moneda) === 'USD' ? ' dólares estadounidenses' : ' pesos';
+    return ucfirst(alq_letras($enteros)) . $unidad . ($cent ? ' con ' . str_pad((string)$cent, 2, '0', STR_PAD_LEFT) . '/100' : '');
+}
 function alq_letras(int $n): string {
     if ($n === 0) return 'cero';
     $u = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte', 'veintiuno', 'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho', 'veintinueve'];
@@ -411,7 +434,7 @@ function alq_recibo_render(array $d): string {
   </div>
 
   <div class="rec2__bottom">
-    <div class="rec2__son"><b>TOTAL</b> <span class="caja"><?= h(dinero($d['monto'] ?? 0)) ?></span></div>
+    <div class="rec2__son"><b>TOTAL</b> <span class="caja"><?= h(dinero($d['monto'] ?? 0, $d['moneda'] ?? 'ARS')) ?></span></div>
   </div>
 </div>
     <?php

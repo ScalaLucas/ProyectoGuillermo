@@ -34,7 +34,7 @@ switch ($accion) {
             'garante1' => ['nombre' => t('gar1_nombre', 160), 'dni' => t('gar1_dni', 30), 'tel' => t('gar1_tel', 40), 'domicilio' => t('gar1_domicilio', 200)],
             'garante2' => ['nombre' => t('gar2_nombre', 160), 'dni' => t('gar2_dni', 30), 'tel' => t('gar2_tel', 40), 'domicilio' => t('gar2_domicilio', 200)],
             'garantes' => t('garantes', 600),
-            'inicio' => $inicio, 'meses' => $meses, 'monto_inicial' => $monto,
+            'inicio' => $inicio, 'meses' => $meses, 'moneda' => alq_moneda(t('moneda', 3)), 'monto_inicial' => $monto,
             'ajuste_tipo' => in_array(t('ajuste_tipo'), ['ICL', 'IPC', 'CASA', 'Porcentaje fijo', 'Ninguno'], true) ? t('ajuste_tipo') : 'Ninguno',
             'ajuste_cada' => max(0, min(24, (int)n('ajuste_cada'))),
             'ajuste_pct_fijo' => t('ajuste_pct_fijo', 20) === '' ? '' : max(-99, min(1000, n('ajuste_pct_fijo'))),
@@ -151,7 +151,7 @@ switch ($accion) {
         }
         $nuevoR = [
             'id' => $ridx !== null ? $id : ri_nuevo_id($recibos),
-            'serie' => $serie, 'numero' => $numero, 'fecha' => $fecha, 'monto' => $monto,
+            'serie' => $serie, 'numero' => $numero, 'fecha' => $fecha, 'monto' => $monto, 'moneda' => alq_moneda(t('moneda', 3)),
             'nombre' => $nombre, 'dni' => t('dni', 30), 'concepto' => $concepto, 'nota' => t('nota', 300),
             'creado' => $ridx !== null ? ($recibos[$ridx]['creado'] ?? date('Y-m-d H:i:s')) : date('Y-m-d H:i:s'),
         ];

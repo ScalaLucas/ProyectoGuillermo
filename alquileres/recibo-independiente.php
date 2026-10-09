@@ -10,7 +10,7 @@ $r = $id ? ri_encontrar($recibos, $id) : null;
 $nuevo = $r === null;
 $r = $r ?? [
     'id' => '', 'serie' => $cfg['serie'], 'numero' => ri_siguiente_numero($recibos, $cfg['serie']),
-    'fecha' => date('Y-m-d'), 'nombre' => '', 'dni' => '', 'concepto' => '', 'monto' => '', 'nota' => '',
+    'fecha' => date('Y-m-d'), 'nombre' => '', 'dni' => '', 'concepto' => '', 'monto' => '', 'moneda' => 'ARS', 'nota' => '',
 ];
 
 usort($recibos, fn($a, $b) => strcmp($b['creado'] ?? '', $a['creado'] ?? ''));
@@ -30,7 +30,7 @@ if (isset($errs[$msg])): [$t, $m] = explode(':', $errs[$msg], 2); ?><div class="
   <div class="f"><label>Serie</label><input name="serie" maxlength="3" style="text-transform:uppercase" value="<?= h($r['serie']) ?>" required></div>
   <div class="f"><label>Número</label><input type="number" name="numero" min="1" value="<?= h($r['numero']) ?>" required></div>
   <div class="f"><label>Fecha</label><input type="date" name="fecha" value="<?= h($r['fecha']) ?>" required></div>
-  <div class="f"><label>Monto ($)</label><input type="number" name="monto" min="0" step="0.01" value="<?= h($r['monto']) ?>" required></div>
+  <div class="f"><label>Monto</label><div style="display:flex;gap:6px"><select name="moneda" style="width:92px"><option value="ARS"<?= alq_moneda($r['moneda'] ?? 'ARS') === 'ARS' ? ' selected' : '' ?>>$ pesos</option><option value="USD"<?= alq_moneda($r['moneda'] ?? 'ARS') === 'USD' ? ' selected' : '' ?>>US$ dólares</option></select><input type="number" name="monto" min="0" step="0.01" value="<?= h($r['monto']) ?>" required></div></div>
 </div>
 <div class="grid g2">
   <div class="f"><label>Recibí de (nombre)</label><input name="nombre" value="<?= h($r['nombre']) ?>" required placeholder="Nombre y apellido, o razón social"></div>
@@ -51,7 +51,7 @@ if (isset($errs[$msg])): [$t, $m] = explode(':', $errs[$msg], 2); ?><div class="
   <td><?= h(fecha_es($x['fecha'])) ?></td>
   <td><?= h($x['nombre']) ?></td>
   <td><?= h($x['concepto']) ?></td>
-  <td class="r"><?= h(dinero($x['monto'])) ?></td>
+  <td class="r"><?= h(dinero($x['monto'], $x['moneda'] ?? 'ARS')) ?></td>
   <td class="actions">
     <a class="btn sm gh" target="_blank" href="recibo-independiente-imprimir.php?id=<?= h($x['id']) ?>">Imprimir</a>
     <a class="btn sm gh" href="recibo-independiente.php?id=<?= h($x['id']) ?>">Editar</a>

@@ -8,6 +8,8 @@ $nuevo = $c === null;
 $msg = $_GET['msg'] ?? '';
 $c = $c ?? ['id' => '', 'propiedad_id' => '', 'propiedad_txt' => '', 'propietario' => [], 'inquilino' => [], 'garante1' => [], 'garante2' => [], 'garantes' => '', 'inicio' => date('Y-m-01'), 'meses' => 24, 'monto_inicial' => '', 'ajuste_tipo' => 'ICL', 'ajuste_cada' => 6, 'ajuste_pct_fijo' => '', 'comision' => 5, 'deposito' => '', 'interes_mora' => '', 'dia_venc' => 10, 'seguro_contratado' => false, 'seguro_poliza' => '', 'seguro_vencimiento' => '', 'notas' => '', 'estado' => 'vigente', 'ajustes' => [], 'cobros' => []];
 
+$mon = alq_moneda($c);
+$fmt = fn($n) => dinero($n, $mon);
 $props = alq_propiedades();
 usort($props, fn($a, $b) => [($a['operacion'] ?? '') === 'Alquiler' ? 0 : 1, $a['direccion'] ?? ''] <=> [($b['operacion'] ?? '') === 'Alquiler' ? 0 : 1, $b['direccion'] ?? '']);
 $propActual = $c['propiedad_id'] ? alq_propiedad($c['propiedad_id']) : null;
@@ -36,15 +38,15 @@ $proxMostrar = $pa;
 if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $mes) { $proxMostrar = $a['desde']; break; } }
 ?>
 <div class="grid g4">
-  <div class="kpi"><span>Alquiler actual</span><b><?= h(dinero(alq_monto_actual($c))) ?></b></div>
+  <div class="kpi"><span>Alquiler actual</span><b><?= h($fmt(alq_monto_actual($c))) ?></b></div>
   <div class="kpi"><span>Vigencia</span><b style="font-size:17px"><?= h(fecha_es($c['inicio'])) ?> → <?= h(fecha_es(alq_fin($c))) ?></b></div>
-  <div class="kpi <?= alq_deuda($c) > 0 ? 'bad' : 'ok' ?>"><span>Deuda</span><b><?= h(dinero(alq_deuda($c))) ?></b></div>
+  <div class="kpi <?= alq_deuda($c) > 0 ? 'bad' : 'ok' ?>"><span>Deuda</span><b><?= h($fmt(alq_deuda($c))) ?></b></div>
   <div class="kpi warn"><span>Próx. actualización</span><b style="font-size:17px"><?= $proxMostrar ? h(periodo_es($proxMostrar)) : '—' ?></b></div>
 </div>
 <div class="card" style="margin-top:16px">
   <b>Rescisión anticipada (estimado)</b>
   <p class="hint" style="margin:6px 0">Criterio habitual (Art. 1221 CCCN): habilitada a partir del 6º mes de contrato. Es una referencia general — revisá siempre la cláusula puntual de este contrato.</p>
-  <p style="margin:4px 0"><?= $resc['meses_transcurridos'] ?> meses transcurridos desde el inicio · <?= $resc['habilitada'] ? '<span class="badge b-ok">Habilitada</span>' : '<span class="badge b-mut">Todavía no habilitada</span>' ?><?php if ($resc['habilitada']): ?> · Multa estimada: <b><?= h(dinero($resc['multa_monto'])) ?></b> (<?= $resc['multa_meses'] == 1.5 ? '1,5' : '1' ?> mes<?= $resc['multa_meses'] == 1.5 ? 'es' : '' ?> de alquiler)<?php endif; ?></p>
+  <p style="margin:4px 0"><?= $resc['meses_transcurridos'] ?> meses transcurridos desde el inicio · <?= $resc['habilitada'] ? '<span class="badge b-ok">Habilitada</span>' : '<span class="badge b-mut">Todavía no habilitada</span>' ?><?php if ($resc['habilitada']): ?> · Multa estimada: <b><?= h($fmt($resc['multa_monto'])) ?></b> (<?= $resc['multa_meses'] == 1.5 ? '1,5' : '1' ?> mes<?= $resc['multa_meses'] == 1.5 ? 'es' : '' ?> de alquiler)<?php endif; ?></p>
 </div>
 <?php if ($propActual): ?>
 <div class="card" style="display:flex;gap:14px;align-items:center;margin-top:16px">
@@ -91,16 +93,19 @@ if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $me
 <div class="f"><label>Otras notas sobre la garantía (opcional)</label><textarea name="garantes" rows="2" placeholder="Ej: seguro de caución, garantía propietaria, depósito adicional…"><?= h($c['garantes']) ?></textarea></div>
 <h2>Condiciones económicas</h2>
 <div class="grid g4">
+  <div class="f"><label>Moneda del contrato</label><select name="moneda" id="sel-moneda"><option value="ARS"<?= $mon === 'ARS' ? ' selected' : '' ?>>Pesos ($)</option><option value="USD"<?= $mon === 'USD' ? ' selected' : '' ?>>Dólares (US$)</option></select><small class="hint">Todos los montos de este contrato se cargan y se muestran en esta moneda.</small></div>
+</div>
+<div class="grid g4">
   <div class="f"><label>Inicio *</label><input type="date" name="inicio" value="<?= h($c['inicio']) ?>" required></div>
   <div class="f"><label>Duración (meses) *</label><input type="number" name="meses" min="1" max="120" value="<?= h($c['meses']) ?>" required></div>
-  <div class="f"><label>Alquiler inicial ($) *</label><input type="number" name="monto_inicial" min="0" step="0.01" value="<?= h($c['monto_inicial']) ?>" required></div>
+  <div class="f"><label>Alquiler inicial (<span class="sim"><?= $mon === 'USD' ? 'US$' : '$' ?></span>) *</label><input type="number" name="monto_inicial" min="0" step="0.01" value="<?= h($c['monto_inicial']) ?>" required></div>
   <div class="f"><label>Día de vencimiento</label><input type="number" name="dia_venc" min="1" max="28" value="<?= h($c['dia_venc']) ?>"></div>
 </div>
 <div class="grid g4">
   <div class="f"><label>Actualización por</label><select name="ajuste_tipo"><?php foreach (['ICL', 'IPC', 'CASA', 'Porcentaje fijo', 'Ninguno'] as $t): ?><option <?= $c['ajuste_tipo'] === $t ? 'selected' : '' ?>><?= $t ?></option><?php endforeach; ?></select></div>
   <div class="f"><label>Cada (meses)</label><input type="number" name="ajuste_cada" min="0" max="24" value="<?= h($c['ajuste_cada']) ?>"></div>
   <div class="f"><label>Comisión de la inmobiliaria (%)</label><input type="number" name="comision" min="0" max="100" step="0.01" value="<?= h($c['comision']) ?>"></div>
-  <div class="f"><label>Depósito en garantía ($)</label><input type="number" name="deposito" min="0" step="0.01" value="<?= h($c['deposito']) ?>"></div>
+  <div class="f"><label>Depósito en garantía (<span class="sim"><?= $mon === 'USD' ? 'US$' : '$' ?></span>)</label><input type="number" name="deposito" min="0" step="0.01" value="<?= h($c['deposito']) ?>"></div>
 </div>
 <div class="grid g2">
   <div class="f"><label>Interés por mora (% diario)</label><input type="number" name="interes_mora" min="0" max="10" step="0.01" value="<?= h($c['interes_mora'] ?? '') ?>" placeholder="Ej: 1"><small class="hint">Opcional. Se cobra sobre lo que esté impago, desde el día siguiente al vencimiento.</small></div>
@@ -120,6 +125,7 @@ if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $me
 <button class="btn" type="submit">Guardar contrato</button> <a class="btn gh" href="index.php">Volver</a>
 </form>
 <script>
+document.getElementById('sel-moneda')?.addEventListener('change',function(){var s=this.value==='USD'?'US$':'$';document.querySelectorAll('.sim').forEach(function(e){e.textContent=s;});});
 (function(){var s=document.getElementById('prop'),t=document.querySelector('[name=propiedad_txt]');
 s.addEventListener('change',function(){var o=s.options[s.selectedIndex];if(s.value){var x=o.text.split(' · ');t.value=x.slice(1,-1).join(' · ');}});})();
 </script>
@@ -129,14 +135,14 @@ s.addEventListener('change',function(){var o=s.options[s.selectedIndex];if(s.val
 <h2 id="cobros">Cobros mensuales</h2>
 <div class="tablewrap"><table><thead><tr><th>Período</th><th class="r">Alquiler</th><th class="r">Cobrado</th><th>Estado</th><?php if ($tieneMora): ?><th class="r">Interés por mora</th><?php endif; ?><th>Pagos / recibos</th></tr></thead><tbody>
 <?php foreach ($meses as $per): $est = alq_estado_periodo($c, $per); $cls = ['pagado' => 'b-ok', 'parcial' => 'b-warn', 'atrasado' => 'b-bad', 'pendiente' => 'b-mut'][$est]; ?>
-<tr><td><b><?= h(periodo_es($per)) ?></b></td><td class="r"><?= h(dinero(alq_monto_periodo($c, $per))) ?></td><td class="r"><?= h(dinero(alq_cobrado_periodo($c, $per))) ?></td>
+<tr><td><b><?= h(periodo_es($per)) ?></b></td><td class="r"><?= h($fmt(alq_monto_periodo($c, $per))) ?></td><td class="r"><?= h($fmt(alq_cobrado_periodo($c, $per))) ?></td>
 <td><span class="badge <?= $cls ?>"><?= h(ucfirst($est)) ?></span></td>
 <?php if ($tieneMora): $int = alq_interes_mora($c, $per); ?>
-<td class="r"><?php if ($int > 0): ?><span class="badge b-bad"><?= h(dinero($int)) ?></span> <span class="hint"><?= alq_dias_atraso($c, $per) ?> d</span><?php else: ?>—<?php endif; ?></td>
+<td class="r"><?php if ($int > 0): ?><span class="badge b-bad"><?= h($fmt($int)) ?></span> <span class="hint"><?= alq_dias_atraso($c, $per) ?> d</span><?php else: ?>—<?php endif; ?></td>
 <?php endif; ?>
 <td><?php foreach ($c['cobros'] as $co) if ($co['periodo'] === $per): ?>
   <?php $extrasIt = alq_extras_items($co); $descIt = alq_descuentos_items($co); ?>
-  <div><?= h(fecha_es($co['fecha'])) ?> · <?= h(dinero($co['monto'])) ?><?php foreach ($extrasIt as $it): ?> + <?= h(dinero($it['monto'])) ?> <?= h($it['concepto']) ?><?php endforeach; ?><?php foreach ($descIt as $it): ?> − <?= h(dinero($it['monto'])) ?> <?= h($it['concepto']) ?><?php endforeach; ?> · <?= h($co['medio']) ?>
+  <div><?= h(fecha_es($co['fecha'])) ?> · <?= h($fmt($co['monto'])) ?><?php foreach ($extrasIt as $it): ?> + <?= h($fmt($it['monto'])) ?> <?= h($it['concepto']) ?><?php endforeach; ?><?php foreach ($descIt as $it): ?> − <?= h($fmt($it['monto'])) ?> <?= h($it['concepto']) ?><?php endforeach; ?> · <?= h($co['medio']) ?>
   · <a href="recibo.php?c=<?= h($c['id']) ?>&n=<?= (int)$co['recibo'] ?>" target="_blank">Recibo N° <?= str_pad((string)$co['recibo'], 6, '0', STR_PAD_LEFT) ?></a>
   <?= avisos_botones($c, 'cobro_ok', (string)$co['recibo']) ?>
   <form method="post" action="acciones.php" style="display:inline" onsubmit="return confirm('¿Eliminar este cobro?')"><input type="hidden" name="csrf" value="<?= h(alq_csrf()) ?>"><input type="hidden" name="accion" value="borrar_cobro"><input type="hidden" name="id" value="<?= h($c['id']) ?>"><input type="hidden" name="recibo" value="<?= (int)$co['recibo'] ?>"><button class="btn sm red" type="submit">✕</button></form></div>
@@ -147,7 +153,7 @@ s.addEventListener('change',function(){var o=s.options[s.selectedIndex];if(s.val
 <form class="card" method="post" action="acciones.php"><input type="hidden" name="csrf" value="<?= h(alq_csrf()) ?>"><input type="hidden" name="accion" value="cobro"><input type="hidden" name="id" value="<?= h($c['id']) ?>">
 <div class="grid g4">
   <div class="f"><label>Período</label><input type="month" name="periodo" id="cb-per" value="<?= h(periodo_actual()) ?>" required><small class="hint">Se puede elegir un mes futuro: pago anticipado.</small></div>
-  <div class="f"><label>Alquiler cobrado ($)</label><input type="number" name="monto" id="cb-monto" min="0" step="0.01" value="<?= h(alq_monto_periodo($c, periodo_actual())) ?>" required></div>
+  <div class="f"><label>Alquiler cobrado (<span class="sim"><?= $mon === 'USD' ? 'US$' : '$' ?></span>)</label><input type="number" name="monto" id="cb-monto" min="0" step="0.01" value="<?= h(alq_monto_periodo($c, periodo_actual())) ?>" required></div>
   <div class="f"><label>Fecha de pago</label><input type="date" name="fecha" value="<?= h(date('Y-m-d')) ?>" required></div>
   <div class="f"><label>Medio</label><select name="medio"><?php foreach (['Efectivo', 'Transferencia', 'Mercado Pago', 'Cheque', 'Otro'] as $m): ?><option><?= $m ?></option><?php endforeach; ?></select></div>
 </div>
@@ -223,7 +229,7 @@ p.addEventListener('change',calc);h.addEventListener('change',calc);})();
 <?php if ($esAuto): ?><p class="hint">Porcentaje fijo: los aumentos de <?= h(number_format((float)$c['ajuste_pct_fijo'], 2, ',', '.')) ?>% cada <?= (int)$c['ajuste_cada'] ?> meses se aplican solos (abajo). Si un período puntual se pactó distinto, cargalo a mano y ese va a tener prioridad.</p>
 <?php elseif ($pa): ?><p class="hint">Corresponde actualizar desde <b><?= h(periodo_es($pa)) ?></b> (<?= h($c['ajuste_tipo']) ?>, cada <?= (int)$c['ajuste_cada'] ?> meses). Ingresá el porcentaje de variación del índice del período y el sistema calcula el nuevo alquiler.</p><?php endif; ?>
 <?php if ($ajustesEf): ?><div class="tablewrap"><table><thead><tr><th>Desde</th><th>Índice</th><th class="r">Variación</th><th class="r">Alquiler anterior</th><th class="r">Alquiler nuevo</th><th>Nota</th><th>Avisar</th><th></th></tr></thead><tbody>
-<?php foreach ($ajustesEf as $a): ?><tr><td><?= h(periodo_es($a['desde'])) ?></td><td><?= h($a['indice']) ?><?php if (!empty($a['auto'])): ?> <span class="badge b-mut">automático</span><?php endif; ?></td><td class="r"><?= h(number_format((float)$a['porcentaje'], 2, ',', '.')) ?> %</td><td class="r"><?= h(dinero($a['monto_anterior'])) ?></td><td class="r"><b><?= h(dinero($a['monto_nuevo'])) ?></b></td><td><?= h($a['nota'] ?? '') ?></td>
+<?php foreach ($ajustesEf as $a): ?><tr><td><?= h(periodo_es($a['desde'])) ?></td><td><?= h($a['indice']) ?><?php if (!empty($a['auto'])): ?> <span class="badge b-mut">automático</span><?php endif; ?></td><td class="r"><?= h(number_format((float)$a['porcentaje'], 2, ',', '.')) ?> %</td><td class="r"><?= h($fmt($a['monto_anterior'])) ?></td><td class="r"><b><?= h($fmt($a['monto_nuevo'])) ?></b></td><td><?= h($a['nota'] ?? '') ?></td>
 <td><?= avisos_botones($c, 'ajuste_ok', $a['desde']) ?></td>
 <td><?php if (empty($a['auto'])): ?><form method="post" action="acciones.php" onsubmit="return confirm('¿Eliminar esta actualización?')"><input type="hidden" name="csrf" value="<?= h(alq_csrf()) ?>"><input type="hidden" name="accion" value="borrar_ajuste"><input type="hidden" name="id" value="<?= h($c['id']) ?>"><input type="hidden" name="desde" value="<?= h($a['desde']) ?>"><button class="btn sm red" type="submit">✕</button></form><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div><?php endif; ?>
 <form class="card" method="post" action="acciones.php" style="margin-top:12px"><input type="hidden" name="csrf" value="<?= h(alq_csrf()) ?>"><input type="hidden" name="accion" value="ajuste"><input type="hidden" name="id" value="<?= h($c['id']) ?>">
@@ -231,10 +237,10 @@ p.addEventListener('change',calc);h.addEventListener('change',calc);})();
   <div class="f"><label>Rige desde (período)</label><input type="month" name="desde" value="<?= h($pa ?? periodo_actual()) ?>" required></div>
   <div class="f"><label>Índice</label><select name="indice"><?php foreach (['ICL', 'IPC', 'CASA', 'Porcentaje fijo', 'Acuerdo'] as $t): ?><option <?= $c['ajuste_tipo'] === $t ? 'selected' : '' ?>><?= $t ?></option><?php endforeach; ?></select></div>
   <div class="f"><label>Variación acumulada (%)</label><input type="number" name="porcentaje" step="0.01" placeholder="Ej: 32.5" value="<?= h($c['ajuste_pct_fijo'] ?? '') ?>"></div>
-  <div class="f"><label>…o nuevo alquiler ($)</label><input type="number" name="monto_nuevo" min="0" step="0.01" placeholder="Ej: 625600"><small class="hint">Si ya sabés el valor, ponelo acá y dejá el % vacío.</small></div>
+  <div class="f"><label>…o nuevo alquiler (<span class="sim"><?= $mon === 'USD' ? 'US$' : '$' ?></span>)</label><input type="number" name="monto_nuevo" min="0" step="0.01" placeholder="Ej: 625600"><small class="hint">Si ya sabés el valor, ponelo acá y dejá el % vacío.</small></div>
   <div class="f"><label>Nota</label><input name="nota"></div>
 </div>
-<p class="hint">Alquiler actual: <?= h(dinero(alq_monto_actual($c))) ?>. Cargá el <b>%</b> (nuevo valor = alquiler vigente × (1 + variación / 100)) <b>o</b> el <b>nuevo alquiler</b> directo; si cargás los dos, vale el nuevo alquiler.</p>
+<p class="hint">Alquiler actual: <?= h($fmt(alq_monto_actual($c))) ?>. Cargá el <b>%</b> (nuevo valor = alquiler vigente × (1 + variación / 100)) <b>o</b> el <b>nuevo alquiler</b> directo; si cargás los dos, vale el nuevo alquiler.</p>
 <button class="btn" type="submit">Aplicar actualización</button></form>
 
 <form method="post" action="acciones.php" style="margin-top:26px" onsubmit="return confirm('¿Eliminar TODO el contrato con sus cobros? No se puede deshacer.')"><input type="hidden" name="csrf" value="<?= h(alq_csrf()) ?>"><input type="hidden" name="accion" value="borrar_contrato"><input type="hidden" name="id" value="<?= h($c['id']) ?>"><button class="btn red sm" type="submit">Eliminar contrato</button></form>

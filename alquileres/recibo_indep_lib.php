@@ -43,8 +43,6 @@ function ri_siguiente_numero(array $recibos, string $serie): int {
     return $max + 1;
 }
 /** Monto en letras, formato "pesos con NN/100". */
-function ri_monto_letras(float $total): string {
-    $enteros = (int)floor($total);
-    $cent = (int)round(($total - $enteros) * 100);
-    return ucfirst(alq_letras($enteros)) . ' pesos' . ($cent ? ' con ' . str_pad((string)$cent, 2, '0', STR_PAD_LEFT) . '/100' : '');
+function ri_monto_letras(float $total, string $moneda = 'ARS'): string {
+    return alq_monto_letras($total, $moneda);
 }
