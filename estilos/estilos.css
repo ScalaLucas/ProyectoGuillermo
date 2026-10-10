@@ -294,8 +294,8 @@ button,input,select,textarea{font-family:inherit}
 .footer{background:var(--ink-2);color:rgba(255,255,255,.7)}
 .footer__grid{max-width:var(--maxw);margin:0 auto;padding:clamp(50px,6vw,80px) clamp(20px,5vw,60px) 30px;
   display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px}
-.footer__logo{background:#fff;padding:8px 12px;border-radius:10px;display:inline-block}
-.footer__logo img{height:64px;width:auto}
+.footer__logo{display:inline-block}
+.footer__logo img{height:78px;width:auto}
 .footer p{font-size:14px;line-height:1.7;max-width:340px;margin:16px 0 20px;font-weight:300}
 .footer__soc{display:flex;gap:12px}
 .footer__soc a{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);
@@ -508,7 +508,7 @@ button,input,select,textarea{font-family:inherit}
   .search__row{grid-template-columns:1fr}
   .list-grid,.grid-cards{grid-template-columns:1fr}
   :root{--nav-h:78px;--topbar-h:48px}
-  .footer__logo img{height:54px}
+  .footer__logo img{height:66px}
   .topbar__icon{height:30px}
   .topbar__brand{gap:10px}
   .topbar__word small{letter-spacing:.2em}
