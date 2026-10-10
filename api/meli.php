@@ -478,6 +478,16 @@ function meli_construir_atributos(string $token, string $categoria, array $propi
             }
             $esNumerico = in_array($def['value_type'] ?? '', ['number', 'number_unit'], true);
             if ($esNumerico && preg_match('/\d[^\d]*(\b[aA]\b|-|–|\bhasta\b)[^\d]*\d/u', $valor)) continue;
+            // Atributos de lista cerrada (ej. "Tipo de seguridad": 24 horas / Diurno /
+            // Nocturno / Virtual): si nuestro valor no figura en la lista de Mercado Libre,
+            // lo rechaza y tira abajo toda la publicación. En ese caso no se manda como
+            // atributo y queda como texto en la descripción.
+            $permitidos = array_filter(array_map(fn($v) => meli_normalizar_texto((string)($v['name'] ?? '')), (array)($def['values'] ?? [])));
+            if ($permitidos && ($def['value_type'] ?? '') === 'list' && !in_array(meli_normalizar_texto($valor), $permitidos, true)) {
+                $extras[] = $etiqueta . ': ' . $valor;
+                $usados[$def['id']] = true;
+                continue;
+            }
             $atributos[] = ['id' => $def['id'], 'value_name' => $valor];
             $usados[$def['id']] = true;
         }
