@@ -96,6 +96,113 @@ function meli_ciudad_para_zona(string $zona): ?string
     return null;
 }
 
+// Capital Federal (CABA) en Mercado Libre: provincia "Capital Federal" (en los items
+// se manda como AR-C), una única ciudad y los barrios cuelgan de ella.
+// Lista tomada de la API pública de ML (classified_locations/cities/TUxBQ0NBUGZlZG1sYQ).
+const MELI_CABA_CIUDAD = 'TUxBQ0NBUGZlZG1sYQ';
+const MELI_CABA_BARRIOS = [
+    'Agronomía' => 'TUxBQkFHUjk3NjJa',
+    'Almagro' => 'TUxBQkFMTTMwNTBa',
+    'Balvanera' => 'TUxBQkJBTDMxMDZa',
+    'Barracas' => 'TUxBQkJBUjM0MDha',
+    'Barrio Norte' => 'TUxBQkJBUjQwMDQ3MA',
+    'Belgrano' => 'TUxBQkJFTDcyNTJa',
+    'Belgrano Barrancas' => 'TUxBQkJFTDkwNjNa',
+    'Belgrano C' => 'TUxBQkJFTDk4MDRa',
+    'Belgrano Chico' => 'TUxBQkJFTDU0ODda',
+    'Belgrano R' => 'TUxBQkJFTDU5NzNa',
+    'Boedo' => 'TUxBQkJPRTQ0OTRa',
+    'Botánico' => 'TUxBQkJPVDQ2NTFa',
+    'Caballito' => 'TUxBQkNBQjM4MDda',
+    'Chacarita' => 'TUxBQkNIQTM5NjBa',
+    'Coghlan' => 'TUxBQkNPRzY5MTZa',
+    'Colegiales' => 'TUxBQkNPTDI3NDNa',
+    'Congreso' => 'TUxBQkNPTjgyODY1Mg',
+    'Constitución' => 'TUxBQkNPTjExMDBa',
+    'Flores' => 'TUxBQkZMTzMwNzRa',
+    'Floresta' => 'TUxBQkZMTzg5MjFa',
+    'La Boca' => 'TUxBQkxBQjk1ODJa',
+    'Las Cañitas' => 'TUxBQkxBUzIxNTJa',
+    'Liniers' => 'TUxBQkxJTjEzNTha',
+    'Mataderos' => 'TUxBQk1BVDMwMDJa',
+    'Monserrat' => 'TUxBQk1PTjUxOTJa',
+    'Monte Castro' => 'TUxBQk1PTjE2OTBa',
+    'Nueva Pompeya' => 'TUxBQk5VRTc3MTZa',
+    'Núñez' => 'TUxBQk7a0TcwOTRa',
+    'Once' => 'TUxBQk9OQzM1Mjk5Ng',
+    'Palermo' => 'TUxBQlBBTDI1MTVa',
+    'Palermo Chico' => 'TUxBQlBBTDg3OTha',
+    'Palermo Hollywood' => 'TUxBQlBBTDg1NjJa',
+    'Palermo Nuevo' => 'TUxBQlBBTDgwMjla',
+    'Palermo Soho' => 'TUxBQlBBTDg3MDda',
+    'Palermo Viejo' => 'TUxBQlBBTDE5ODla',
+    'Parque Avellaneda' => 'TUxBQlBBUjQ1NDda',
+    'Parque Centenario' => 'TVhYUGFycXVlIENlbnRlbmFyaW9UVXhCUTBOQ',
+    'Parque Chacabuco' => 'TUxBQlBBUjUyOTZa',
+    'Parque Chas' => 'TVhYUGFycXVlIENoYXNUVXhCUTBOQlVHWmxaR',
+    'Parque Patricios' => 'TUxBQlBBUjYwMzZa',
+    'Paternal' => 'TUxBQlBBVDI0ODFa',
+    'Puerto Madero' => 'TUxBQlBVRTQ5NjBa',
+    'Puerto Retiro' => 'TVhYUHVlcnRvIFJldGlyb1RVeEJRME5CVUdab',
+    'Recoleta' => 'TUxBQlJFQzkyMTVa',
+    'Retiro' => 'TUxBQlJFVDgyMDVa',
+    'Saavedra' => 'TUxBQlNBQTM3Mzda',
+    'San Cristóbal' => 'TUxBQlNBTjkwNTZa',
+    'San Nicolás' => 'TUxBQlNBTjgzMjRa',
+    'San Telmo' => 'TUxBQlNBTjgxMzNa',
+    'Santa Rita' => 'TUxBQlNBTjEyMjNa',
+    'Velez Sarsfield' => 'TUxBQlZFTDIwNDha',
+    'Versalles' => 'TUxBQlZFUjY3MDFa',
+    'Villa Crespo' => 'TUxBQlZJTDQyMjBa',
+    'Villa Devoto' => 'TUxBQlZJTDYzNzZa',
+    'Villa Gral. Mitre' => 'TUxBQlZJTDI1ODla',
+    'Villa Lugano' => 'TUxBQlZJTDQ4MzBa',
+    'Villa Luro' => 'TUxBQlZJTDI3MDJa',
+    'Villa Ortúzar' => 'TUxBQlZJTDQyMjFa',
+    'Villa Pueyrredón' => 'TUxBQlZJTDE2MDBa',
+    'Villa Real' => 'TUxBQlZJTDM3Mzda',
+    'Villa Riachuelo' => 'TUxBQlZJTDU5MTFa',
+    'Villa Soldati' => 'TUxBQlZJTDM5MjZa',
+    'Villa Urquiza' => 'TUxBQlZJTDcwOTla',
+    'Villa del Parque' => 'TUxBQlZJTDc4MDda',
+];
+
+/** Minúsculas, sin tildes y sin signos: para comparar nombres de zona. */
+function meli_normalizar(string $s): string
+{
+    $s = mb_strtolower(trim($s), 'UTF-8');
+    $s = str_replace(['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ'], ['a', 'e', 'i', 'o', 'u', 'u', 'n'], $s);
+    $s = preg_replace('/[^a-z0-9]+/', ' ', $s);
+    return trim($s);
+}
+
+/**
+ * Ubicación para ML a partir de la zona cargada en el panel. Primero las zonas
+ * del oeste/GBA (MELI_CIUDADES); si no, Capital Federal: reconoce el nombre de
+ * cualquier barrio ("Parque Chas", "Ciudad Autónoma de Buenos Aires, Parque
+ * Chas", "Villa Urquiza"…) o solo "CABA"/"Capital Federal" (sin barrio).
+ * Devuelve ['ciudad' => id, 'provincia' => 'AR-B'|'AR-C', 'barrio' => id|null] o null.
+ */
+function meli_ubicacion_para_zona(string $zona): ?array
+{
+    $ciudad = meli_ciudad_para_zona($zona);
+    if ($ciudad) return ['ciudad' => $ciudad, 'provincia' => 'AR-B', 'barrio' => null];
+    $zn = ' ' . meli_normalizar($zona) . ' ';
+    $barrios = [];
+    foreach (MELI_CABA_BARRIOS as $nombre => $id) $barrios[meli_normalizar($nombre)] = $id;
+    uksort($barrios, fn($a, $b) => strlen($b) <=> strlen($a)); // primero los nombres largos
+    foreach ($barrios as $nombre => $id) {
+        if (str_contains($zn, ' ' . $nombre . ' ')) {
+            return ['ciudad' => MELI_CABA_CIUDAD, 'provincia' => 'AR-C', 'barrio' => $id];
+        }
+    }
+    foreach (['capital federal', 'caba', 'ciudad autonoma de buenos aires'] as $k) {
+        if (str_contains($zn, ' ' . $k . ' ')) {
+            return ['ciudad' => MELI_CABA_CIUDAD, 'provincia' => 'AR-C', 'barrio' => null];
+        }
+    }
+    return null;
+}
 function meli_configurado(): bool
 {
     return MELI_CLIENT_ID !== '' && MELI_CLIENT_SECRET !== '' && MELI_REDIRECT_URI !== '';
@@ -420,8 +527,8 @@ function meli_publicar_propiedad(array $propiedad): array
     if (!$categoria) {
         return ['ok' => false, 'mensaje' => 'No hay categoría de Mercado Libre asignada para "' . ($propiedad['tipo'] ?? '') . '" en "' . ($propiedad['operacion'] ?? '') . '".', 'item_id' => null];
     }
-    $ciudad = meli_ciudad_para_zona($propiedad['zona'] ?? '');
-    if (!$ciudad) {
+    $ubicacion = meli_ubicacion_para_zona($propiedad['zona'] ?? '');
+    if (!$ubicacion) {
         return ['ok' => false, 'mensaje' => 'No hay ciudad de Mercado Libre asignada para la zona "' . ($propiedad['zona'] ?? '') . '".', 'item_id' => null];
     }
     if (empty($propiedad['fotos'])) {
@@ -477,8 +584,9 @@ function meli_publicar_propiedad(array $propiedad): array
         'attributes' => $atributos,
         'location' => array_filter([
             'address_line' => (string)($propiedad['direccion'] ?? ''),
-            'city' => ['id' => $ciudad],
-            'state' => ['id' => 'AR-B'],
+            'city' => ['id' => $ubicacion['ciudad']],
+            'neighborhood' => $ubicacion['barrio'] ? ['id' => $ubicacion['barrio']] : null,
+            'state' => ['id' => $ubicacion['provincia']],
             'country' => ['id' => 'AR'],
             // Con lat/lng, Mercado Libre muestra el mapa y los lugares
             // cercanos (transporte, escuelas, etc.) en la publicación.
