@@ -240,7 +240,7 @@ window.GP = {
   function initFeatured() {
     var wrap = $("#featured");
     if (!wrap) return;
-    var list = GP.properties.filter(function (p) { return p.destacado && p.fotos && p.fotos.length; }).slice(0, 6);
+    var list = GP.properties.filter(function (p) { return p.destacado && p.fotos && p.fotos.length; }).reverse().slice(0, 6); // las más recientes primero (se guardan en orden de carga)
     wrap.innerHTML = list.map(cardHTML).join("");
     wireCards(wrap);
   }
