@@ -152,7 +152,7 @@ function admin_video_thumb(string $url): ?string
       <div class="field"><label>Tipo de seguridad</label>
         <select name="carac_tipo_seguridad">
           <option value="">— Sin especificar —</option>
-          <?php foreach (['Virtual', 'Física'] as $opt): ?>
+          <?php foreach (['Virtual', '24 horas'] as $opt): ?>
             <option <?= carac_valor_texto($p, 'Tipo de seguridad') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
           <?php endforeach; ?>
         </select>
