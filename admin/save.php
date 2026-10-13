@@ -36,7 +36,14 @@ $m2 = campo_num('m2');
 $amb = campo_num('amb');
 $dorm = campo_num('dorm');
 $banos = campo_num('banos');
-$destacado = !empty($_POST['destacado']);
+// Destacada en la página principal: conserva la fecha en que se destacó; si se
+// marca nueva y ya están los ADMIN_DESTACADAS_MAX lugares ocupados, no se agrega.
+$destacadaHome = null; $destacadaLlena = false;
+if (!empty($_POST['destacada_home'])) {
+    if (!empty($existente['destacada_home'])) $destacadaHome = $existente['destacada_home'];
+    elseif (admin_total_destacadas($props, $esNueva ? '' : $idEnviado) < ADMIN_DESTACADAS_MAX) $destacadaHome = date('c');
+    else $destacadaLlena = true;
+}
 $descripcion = campo_texto('descripcion', 6000);
 
 // Cochera, terreno, local, depósito y oficina no tienen ambientes: solo los
@@ -198,9 +205,10 @@ $propiedad = [
     'dorm' => $dorm,
     'banos' => $banos,
     'amb' => $amb,
-    'destacado' => $destacado,
+    'destacado' => !empty($existente['destacado']), // campo viejo: se conserva tal cual
     'actualizado' => date('c'),
 ];
+if ($destacadaHome !== null) $propiedad['destacada_home'] = $destacadaHome;
 if ($titulo !== '') $propiedad['titulo'] = $titulo;
 if ($descripcion !== '') $propiedad['descripcion'] = $descripcion;
 if ($caracteristicas !== null) $propiedad['caracteristicas'] = $caracteristicas;
@@ -264,4 +272,4 @@ if (!empty($fotos)) {
     propiedades_guardar($props);
 }
 
-header('Location: index.php?msg=' . $msg);
+header('Location: index.php?msg=' . $msg . ($destacadaLlena ? '&dest=lleno' : ''));

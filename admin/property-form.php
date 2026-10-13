@@ -110,7 +110,7 @@ function admin_video_thumb(string $url): ?string
       <div class="field"><label>Baños</label><input type="number" name="banos" min="0" value="<?= admin_html((string)($p['banos'] ?? 0)) ?>"></div>
       <div class="field"><label>&nbsp;</label>
         <label style="flex-direction:row;align-items:center;gap:8px;font-weight:400">
-          <input type="checkbox" name="destacado" value="1" <?= ($esNueva || !empty($p['destacado'])) ? 'checked' : '' ?> style="width:auto"> Mostrar en destacadas (home)
+          <input type="checkbox" name="destacada_home" value="1" <?= !empty($p['destacada_home']) ? 'checked' : '' ?> style="width:auto"> ★ Destacar en la página principal (máx. <?= ADMIN_DESTACADAS_MAX ?>)
         </label>
       </div>
     </div>

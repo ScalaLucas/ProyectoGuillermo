@@ -240,7 +240,15 @@ window.GP = {
   function initFeatured() {
     var wrap = $("#featured");
     if (!wrap) return;
-    var list = GP.properties.filter(function (p) { return p.destacado && p.fotos && p.fotos.length; }).reverse().slice(0, 6); // las más recientes primero (se guardan en orden de carga)
+    // Primero las que eligió el equipo desde el panel (estrella), de la más
+    // recientemente destacada a la más vieja; si sobran lugares, se completan
+    // con las últimas cargadas (se guardan en orden de carga).
+    var MAX = 6;
+    var conFotos = GP.properties.filter(function (p) { return p.fotos && p.fotos.length; });
+    var elegidas = conFotos.filter(function (p) { return p.destacada_home; })
+      .sort(function (a, b) { return String(b.destacada_home).localeCompare(String(a.destacada_home)); });
+    var resto = conFotos.filter(function (p) { return !p.destacada_home; }).reverse();
+    var list = elegidas.concat(resto).slice(0, MAX);
     wrap.innerHTML = list.map(cardHTML).join("");
     wireCards(wrap);
   }
@@ -316,7 +324,7 @@ window.GP = {
       case "amb-desc": arr.sort(function (a, b) { return b.amb - a.amb; }); break;
       case "zona": arr.sort(function (a, b) { return a.zona.localeCompare(b.zona, "es"); }); break;
       case "actualizado": arr.sort(function (a, b) { return new Date(b.actualizado || 0) - new Date(a.actualizado || 0); }); break;
-      default: arr.sort(function (a, b) { return (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0); });
+      default: arr.sort(function (a, b) { return (b.destacada_home ? 2 : b.destacado ? 1 : 0) - (a.destacada_home ? 2 : a.destacado ? 1 : 0); });
     }
     return arr;
   }

@@ -90,11 +90,25 @@ function admin_login_registrar_exito(): void
     @file_put_contents($f, json_encode(['fallos' => 0, 'hasta' => 0]), LOCK_EX);
 }
 
+/* ---------- destacadas de la página principal ---------- */
+// Las elige el equipo con la estrella del listado (o la casilla del formulario).
+// 'destacada_home' guarda cuándo se destacó: la home las muestra de la más
+// reciente a la más vieja y, si hay menos de ADMIN_DESTACADAS_MAX, completa con
+// las últimas cargadas (ver initFeatured en script/script.js). El viejo campo
+// 'destacado' ya no decide la home.
+const ADMIN_DESTACADAS_MAX = 6;
+function admin_es_destacada(array $p): bool { return !empty($p['destacada_home']); }
+/** Cantidad de propiedades destacadas, sin contar la del id indicado. */
+function admin_total_destacadas(array $props, string $exceptoId = ''): int
+{
+    return count(array_filter($props, fn($p) => admin_es_destacada($p) && ($p['id'] ?? '') !== $exceptoId));
+}
+
 /* ---------- interfaz común (mismo estilo de encabezado que Alquileres) ---------- */
 function admin_cabecera(string $titulo, string $activo = ''): void {
     echo '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<title>' . admin_html($titulo) . ' · Propiedades</title><meta name="robots" content="noindex, nofollow">';
-    echo '<link rel="stylesheet" href="admin.css?v=2"></head><body><header class="top"><div class="top__in">';
+    echo '<link rel="stylesheet" href="admin.css?v=3"></head><body><header class="top"><div class="top__in">';
     echo '<a class="brand" href="index.php"><img src="../assets/logo-mr-icon.png" alt=""><span><strong>Propiedades</strong><small>Marcelo Ragonese Propiedades</small></span></a><nav>';
     $veAlquileres = seg_usuario_actual() ? seg_puede('alquileres') : !empty($_SESSION['alq_ok']);
     $nav = ['index.php' => 'Propiedades'];
