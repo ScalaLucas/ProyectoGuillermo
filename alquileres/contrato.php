@@ -27,6 +27,8 @@ alq_cabecera($nuevo ? 'Nuevo contrato' : 'Contrato ' . $c['id'], $nuevo ? 'contr
 if (isset($_GET['aviso'])) $errs['aviso'] = (['ok' => 'ok:Mail enviado.', 'error' => 'err:El servidor no pudo enviar el mail.', 'sin_dato' => 'err:Esa persona no tiene un mail válido cargado.', 'ejemplo' => 'err:Es un contrato de ejemplo: no se envían mails reales.'][$_GET['aviso']] ?? 'err:No se pudo enviar.'); if (isset($_GET['aviso'])) $msg = 'aviso';
 if (isset($errs[$msg])): [$t, $m] = explode(':', $errs[$msg], 2); ?><div class="msg <?= $t ?>"><?= h($m) ?></div><?php endif; ?>
 
+<?php $ixDep = $nuevo ? null : alq_indexacion_deposito($c); $ixPend = $nuevo ? null : alq_indexacion_pendiente($c); ?>
+<?php if ($ixPend): ?><div class="msg warn">⚠ INDEXAR DEPÓSITO — en la cuota <?= ALQ_CUOTA_INDEXACION ?> (<?= h(periodo_es($ixPend['periodo'])) ?>), además del alquiler, el inquilino tiene que pagar la indexación de depósito (un mes más de alquiler): <?= $ixPend['monto'] !== null ? '<b>' . h(dinero($ixPend['monto'], 'ARS')) . '</b>' : 'un mes de alquiler en pesos. Como el alquiler es en dólares, cobralo aparte con un <a href="recibo-independiente.php">recibo independiente</a> en pesos y anotalo en las notas del contrato' ?><?= $ixPend['monto'] !== null ? '. Al registrar el cobro de ese mes se agrega solo como concepto extra' : '' ?>.</div><?php endif; ?>
 <?php if (!$nuevo && alq_riesgo_desalojo($c)): ?><div class="msg err">⚠ <?= alq_meses_adeudados($c) ?> meses sin pagar: según la cláusula habitual del contrato, esto habilita a iniciar acciones de desalojo.</div><?php endif; ?>
 
 <?php if (!$nuevo):
@@ -48,6 +50,15 @@ if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $me
   <p class="hint" style="margin:6px 0">Criterio habitual (Art. 1221 CCCN): habilitada a partir del 6º mes de contrato. Es una referencia general — revisá siempre la cláusula puntual de este contrato.</p>
   <p style="margin:4px 0"><?= $resc['meses_transcurridos'] ?> meses transcurridos desde el inicio · <?= $resc['habilitada'] ? '<span class="badge b-ok">Habilitada</span>' : '<span class="badge b-mut">Todavía no habilitada</span>' ?><?php if ($resc['habilitada']): ?> · Multa estimada: <b><?= h($fmt($resc['multa_monto'])) ?></b> (<?= $resc['multa_meses'] == 1.5 ? '1,5' : '1' ?> mes<?= $resc['multa_meses'] == 1.5 ? 'es' : '' ?> de alquiler)<?php endif; ?></p>
 </div>
+<?php if ($ixDep): ?>
+<div class="card" style="margin-top:16px">
+  <b>Indexar depósito (refuerzo en la cuota <?= ALQ_CUOTA_INDEXACION ?>)</b>
+  <p style="margin:4px 0">Cuota <?= ALQ_CUOTA_INDEXACION ?>: <?= h(periodo_es($ixDep['periodo'])) ?> ·
+  <?php if ($ixDep['cobrado']): ?><span class="badge b-ok">Cobrado</span> en el <a href="recibo.php?c=<?= h($c['id']) ?>&n=<?= (int)$ixDep['recibo'] ?>" target="_blank">recibo N° <?= str_pad((string)$ixDep['recibo'], 6, '0', STR_PAD_LEFT) ?></a> · Depósito total: <b><?= h(dinero((float)($c['deposito'] ?? 0) + $ixDep['monto_cobrado'], 'ARS')) ?></b> (<?= h(dinero($c['deposito'] ?? 0, 'ARS')) ?> al entrar + <?= h(dinero($ixDep['monto_cobrado'], 'ARS')) ?> de refuerzo)
+  <?php else: ?><span class="badge b-warn">Pendiente</span><?= $ixDep['monto'] !== null ? ' · A cobrar: <b>' . h(dinero($ixDep['monto'], 'ARS')) . '</b> (un mes de alquiler de esa cuota)' : ' · Alquiler en dólares: cobrarlo con un recibo independiente en pesos' ?><?php endif; ?></p>
+  <?php if (!$ixDep['cobrado'] && $ixDep['monto'] !== null && $ixDep['periodo'] > periodo_actual()): ?><p class="hint" style="margin:0">El monto es estimado con el alquiler conocido hoy; si en esa cuota hay una actualización que todavía no se cargó, se recalcula sola.</p><?php endif; ?>
+</div>
+<?php endif; ?>
 <?php if ($propActual): ?>
 <div class="card" style="display:flex;gap:14px;align-items:center;margin-top:16px">
   <?php if ($foto): ?><img src="../<?= h($foto) ?>" alt="" style="width:110px;height:74px;object-fit:cover;border-radius:8px"><?php endif; ?>
@@ -105,8 +116,10 @@ if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $me
   <div class="f"><label>Actualización por</label><select name="ajuste_tipo"><?php foreach (['ICL', 'IPC', 'CASA', 'Porcentaje fijo', 'Ninguno'] as $t): ?><option <?= $c['ajuste_tipo'] === $t ? 'selected' : '' ?>><?= $t ?></option><?php endforeach; ?></select></div>
   <div class="f"><label>Cada (meses)</label><input type="number" name="ajuste_cada" min="0" max="24" value="<?= h($c['ajuste_cada']) ?>"></div>
   <div class="f"><label>Comisión de la inmobiliaria (%)</label><input type="number" name="comision" min="0" max="100" step="0.01" value="<?= h($c['comision']) ?>"></div>
-  <div class="f"><label>Depósito en garantía (<span class="sim"><?= $mon === 'USD' ? 'US$' : '$' ?></span>)</label><input type="number" name="deposito" min="0" step="0.01" value="<?= h($c['deposito']) ?>"></div>
+  <?php $monDep = alq_moneda_deposito($c); ?>
+  <div class="f"><label>Depósito en garantía</label><div style="display:flex;gap:6px"><select name="deposito_moneda" id="sel-moneda-dep" style="width:92px" title="Moneda del depósito (puede ser distinta a la del contrato)"><option value="ARS"<?= $monDep === 'ARS' ? ' selected' : '' ?>>$ pesos</option><option value="USD"<?= $monDep === 'USD' ? ' selected' : '' ?>>US$ dólares</option></select><input type="number" name="deposito" min="0" step="0.01" value="<?= h($c['deposito']) ?>"></div><small class="hint">Puede ser en otra moneda que el alquiler.</small></div>
 </div>
+<label style="display:block;margin:0 0 12px"><input type="checkbox" name="indexar_deposito" value="1" <?= !empty($c['indexar_deposito']) ? 'checked' : '' ?>> <b>Indexar depósito en la cuota <?= ALQ_CUOTA_INDEXACION ?></b> <span class="hint">— solo si el contrato lo pide y el depósito es en pesos. Al entrar se cobra 1 mes de depósito y el segundo mes se cobra en la cuota <?= ALQ_CUOTA_INDEXACION ?> como refuerzo (un mes de alquiler de esa cuota, además del alquiler). Si el depósito es en dólares no se indexa: queda fijo.</span></label>
 <div class="grid g2">
   <div class="f"><label>Interés por mora (% diario)</label><input type="number" name="interes_mora" min="0" max="10" step="0.01" value="<?= h($c['interes_mora'] ?? '') ?>" placeholder="Ej: 1"><small class="hint">Opcional. Se cobra sobre lo que esté impago, desde el día siguiente al vencimiento.</small></div>
   <div class="f"><label>% fijo de ajuste</label><input type="number" name="ajuste_pct_fijo" step="0.01" value="<?= h($c['ajuste_pct_fijo'] ?? '') ?>" placeholder="Ej: 10"><small class="hint">Solo si "Actualización por" es Porcentaje fijo (u otro acuerdo con % conocido). Precarga la variación en cada actualización — se puede corregir ahí.</small></div>
@@ -125,7 +138,11 @@ if (!$proxMostrar && $esAuto) { foreach ($ajustesEf as $a) if ($a['desde'] > $me
 <button class="btn" type="submit">Guardar contrato</button> <a class="btn gh" href="index.php">Volver</a>
 </form>
 <script>
-document.getElementById('sel-moneda')?.addEventListener('change',function(){var s=this.value==='USD'?'US$':'$';document.querySelectorAll('.sim').forEach(function(e){e.textContent=s;});});
+(function(){var dep=document.getElementById('sel-moneda-dep'),tocado=<?= isset($c['deposito_moneda']) ? 'true' : 'false' ?>;
+// Un depósito en dólares no se indexa: se deshabilita la casilla.
+var ix=document.querySelector('[name=indexar_deposito]');function ixSync(){if(ix&&dep){ix.disabled=dep.value==='USD';ix.closest('label').style.opacity=ix.disabled?.5:1;}}
+dep?.addEventListener('change',function(){tocado=true;ixSync();});
+document.getElementById('sel-moneda')?.addEventListener('change',function(){var s=this.value==='USD'?'US$':'$';document.querySelectorAll('.sim').forEach(function(e){e.textContent=s;});if(dep&&!tocado)dep.value=this.value;ixSync();});ixSync();})();
 (function(){var s=document.getElementById('prop'),t=document.querySelector('[name=propiedad_txt]');
 s.addEventListener('change',function(){var o=s.options[s.selectedIndex];if(s.value){var x=o.text.split(' · ');t.value=x.slice(1,-1).join(' · ');}});})();
 </script>
@@ -186,6 +203,7 @@ for ($p = substr($c['inicio'], 0, 7); $p <= substr(alq_fin($c), 0, 7); $p = peri
 <script>
 (function(){
 var F=<?= json_encode($faltas) ?>,I=<?= json_encode($intereses) ?>;
+var IX=<?= json_encode($ixDep && !$ixDep['cobrado'] && $ixDep['monto'] !== null ?['periodo' => $ixDep['periodo'], 'monto' => $ixDep['monto'], 'concepto' => ALQ_CONCEPTO_INDEXACION] : null) ?>;
 var p=document.getElementById('cb-per'),h=document.getElementById('cb-hasta'),m=document.getElementById('cb-monto');
 var wrap=document.getElementById('cb-extras-wrap'),addBtn=document.getElementById('cb-extras-add');
 var dwrap=document.getElementById('cb-desc-wrap'),daddBtn=document.getElementById('cb-desc-add');
@@ -205,8 +223,15 @@ addBtn.addEventListener('click', function(){ wrap.appendChild(fila('extra', '', 
 if(daddBtn) daddBtn.addEventListener('click', function(){ dwrap.appendChild(fila('descuento', '', '', false)); });
 
 function quitarAuto(){ var r=wrap.querySelector('[data-auto="1"]'); if(r) r.remove(); }
+// Indexación del depósito: se agrega sola si el pago incluye la cuota 13 (y se quita si no).
+function indexacion(d,a){
+  var r=wrap.querySelector('[data-auto="dep"]'),incluye=IX&&(a&&a>d?(IX.periodo>=d&&IX.periodo<=a):IX.periodo===d);
+  if(!incluye){ if(r) r.remove(); return; }
+  if(!r){ r=fila('extra', IX.concepto, IX.monto===null?'':IX.monto, false); r.dataset.auto='dep'; wrap.insertBefore(r, wrap.firstChild); }
+}
 
 function calc(){var d=p.value,a=h.value;if(!d)return;
+indexacion(d,a);
 if(!a||a<=d){
   m.value=(F[d]>0?F[d]:m.defaultValue);
   var interes=I[d]||0;
@@ -220,7 +245,7 @@ if(!a||a<=d){
 quitarAuto();
 var t=0,x=d;while(x<=a){t+=F[x]||0;var y=+x.slice(0,4),z=+x.slice(5,7)+1;if(z>12){z=1;y++}x=y+'-'+(z<10?'0':'')+z;}m.value=Math.round(t*100)/100;
 }
-p.addEventListener('change',calc);h.addEventListener('change',calc);})();
+p.addEventListener('change',calc);h.addEventListener('change',calc);indexacion(p.value,h.value);})();
 </script>
 <button class="btn" type="submit" style="margin-top:6px">Registrar cobro y generar recibo</button>
 </form>

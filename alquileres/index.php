@@ -6,7 +6,7 @@ $mes = periodo_actual();
 $msg = $_GET['msg'] ?? '';
 
 $vigentes = array_values(array_filter($contratos, fn($c) => ($c['estado'] ?? 'vigente') === 'vigente'));
-$esperadoMes = ['ARS' => 0, 'USD' => 0]; $cobradoMes = ['ARS' => 0, 'USD' => 0]; $atrasados = []; $ajustes = []; $porVencer = [];
+$esperadoMes = ['ARS' => 0, 'USD' => 0]; $cobradoMes = ['ARS' => 0, 'USD' => 0]; $atrasados = []; $ajustes = []; $porVencer = []; $indexar = [];
 foreach ($vigentes as $c) {
     if (in_array($mes, alq_periodos($c), true)) {
         $mo = alq_moneda($c);
@@ -18,6 +18,7 @@ foreach ($vigentes as $c) {
     if ($pa !== null && alq_meses_para($pa) <= 1) $ajustes[] = [$c, $pa];
     $d = alq_dias_fin($c);
     if ($d <= 90) $porVencer[] = [$c, $d];
+    if ($ix = alq_indexacion_pendiente($c)) $indexar[] = [$c, $ix];
 }
 usort($porVencer, fn($a, $b) => $a[1] <=> $b[1]);
 
@@ -59,6 +60,11 @@ alq_cabecera('Panel', 'index.php');
     <?php if (!$porVencer): ?><p class="hint">Ninguno.</p><?php else: ?><ul class="lista">
     <?php foreach ($porVencer as [$c, $d]): ?><li><a href="contrato.php?id=<?= h($c['id']) ?>"><?= h($c['propiedad_txt']) ?></a> — <?= $d < 0 ? 'venció hace ' . abs($d) . ' días' : 'vence en ' . $d . ' días' ?> (<?= h(fecha_es(alq_fin($c))) ?>)</li><?php endforeach; ?></ul><?php endif; ?></div>
 </div>
+<?php if ($indexar): ?>
+<div class="card" style="margin-top:16px;background:#fdf3dc"><b>⚠ INDEXAR DEPÓSITO (cuota <?= ALQ_CUOTA_INDEXACION ?>)</b>
+  <p class="hint" style="margin:4px 0">Además del alquiler, en esa cuota el inquilino paga la indexación de depósito (un mes más de alquiler).</p>
+  <ul class="lista"><?php foreach ($indexar as [$c, $ix]): ?><li><a href="contrato.php?id=<?= h($c['id']) ?>#cobros"><?= h($c['propiedad_txt']) ?></a> — <?= h($c['inquilino']['nombre'] ?? '') ?> · <?= h(periodo_es($ix['periodo'])) ?> <span class="badge b-warn"><?= $ix['monto'] !== null ? h(dinero($ix['monto'], 'ARS')) : 'recibo independiente en pesos' ?></span></li><?php endforeach; ?></ul></div>
+<?php endif; ?>
 
 <h2>Contratos</h2>
 <form class="bar" method="get">

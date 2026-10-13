@@ -18,6 +18,10 @@ function alq_moneda($c = null): string {
     $m = is_array($c) ? ($c['moneda'] ?? 'ARS') : (string)$c;
     return strtoupper($m) === 'USD' ? 'USD' : 'ARS';
 }
+/** Moneda del depósito en garantía: puede diferir de la del contrato; si no se cargó, es la del contrato. */
+function alq_moneda_deposito(array $c): string {
+    return alq_moneda($c['deposito_moneda'] ?? alq_moneda($c));
+}
 /** Formatea un monto con el símbolo de su moneda: "$ 150.000,00" o "US$ 800,00". */
 function dinero($n, ?string $moneda = 'ARS'): string {
     return (alq_moneda($moneda) === 'USD' ? 'US$ ' : '$ ') . number_format((float)$n, 2, ',', '.');
@@ -229,6 +233,37 @@ function alq_prox_ajuste(array $c): ?string {
     foreach ($c['ajustes'] ?? [] as $a) if ($a['desde'] > $base) $base = $a['desde'];
     $prox = periodo_mas($base, $cada);
     return $prox <= substr(alq_fin($c), 0, 7) ? $prox : null;
+}
+/**
+ * Indexar depósito en la cuota 13 (solo contratos con 'indexar_deposito' y
+ * depósito en pesos): el depósito histórico eran 2 meses; al entrar se cobra
+ * 1 y el segundo se cobra en la cuota 13 como refuerzo, por un mes completo
+ * del alquiler de esa cuota (además del alquiler). Un depósito en dólares no
+ * se indexa: queda fijo. Devuelve null si no aplica; si no, periodo, monto,
+ * moneda y si ya se cobró (un cobro con un concepto extra de refuerzo/indexación del depósito).
+ */
+const ALQ_CONCEPTO_INDEXACION = 'Indexación de depósito';
+const ALQ_CUOTA_INDEXACION = 13;
+function alq_indexacion_deposito(array $c): ?array {
+    if (empty($c['indexar_deposito']) || alq_moneda_deposito($c) !== 'ARS' || (int)($c['meses'] ?? 0) < ALQ_CUOTA_INDEXACION) return null;
+    $per = periodo_mas(substr($c['inicio'], 0, 7), ALQ_CUOTA_INDEXACION - 1);
+    // El monto es un mes de alquiler de esa cuota; si el contrato es en dólares y el depósito en pesos, se carga a mano.
+    $monto = alq_moneda($c) === 'ARS' ? round(alq_monto_periodo($c, $per), 2) : null;
+    $recibo = null; $cobrado = 0.0;
+    foreach ($c['cobros'] ?? [] as $co) foreach (alq_extras_items($co) as $it) {
+        $k = mb_strtolower($it['concepto']);
+        if ((str_contains($k, 'refuerzo') || str_contains($k, 'indexaci')) && str_contains($k, 'dep')) { $recibo = $recibo ?? (int)$co['recibo']; $cobrado += (float)$it['monto']; }
+    }
+    return ['periodo' => $per, 'monto' => $monto, 'cobrado' => $recibo !== null, 'recibo' => $recibo, 'monto_cobrado' => $cobrado];
+}
+/** Indexación del depósito pendiente de cobrar y ya cerca (desde un mes antes de la cuota 13). */
+function alq_indexacion_pendiente(array $c): ?array {
+    if (($c['estado'] ?? 'vigente') !== 'vigente') return null;
+    $ix = alq_indexacion_deposito($c);
+    if (!$ix || $ix['cobrado'] || alq_meses_para($ix['periodo']) > 1) return null;
+    // Alquiler en dólares: el refuerzo va en un recibo independiente que el sistema no vincula; el aviso dura hasta que pasa esa cuota.
+    if ($ix['monto'] === null && alq_meses_para($ix['periodo']) < 0) return null;
+    return $ix;
 }
 function alq_meses_para(string $periodo): int {
     return ((int)substr($periodo, 0, 4) - (int)date('Y')) * 12 + ((int)substr($periodo, 5, 2) - (int)date('n'));
