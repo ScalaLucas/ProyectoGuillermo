@@ -110,7 +110,7 @@ function admin_video_thumb(string $url): ?string
       <div class="field"><label>Baños</label><input type="number" name="banos" min="0" value="<?= admin_html((string)($p['banos'] ?? 0)) ?>"></div>
       <div class="field"><label>&nbsp;</label>
         <label style="flex-direction:row;align-items:center;gap:8px;font-weight:400">
-          <input type="checkbox" name="destacado" value="1" <?= !empty($p['destacado']) ? 'checked' : '' ?> style="width:auto"> Mostrar en destacadas (home)
+          <input type="checkbox" name="destacado" value="1" <?= ($esNueva || !empty($p['destacado'])) ? 'checked' : '' ?> style="width:auto"> Mostrar en destacadas (home)
         </label>
       </div>
     </div>
@@ -152,7 +152,7 @@ function admin_video_thumb(string $url): ?string
       <div class="field"><label>Tipo de seguridad</label>
         <select name="carac_tipo_seguridad">
           <option value="">— Sin especificar —</option>
-          <?php foreach (['Virtual', 'Física'] as $opt): ?>
+          <?php foreach (['24 horas', 'Diurno', 'Nocturno', 'Virtual'] as $opt): ?>
             <option <?= carac_valor_texto($p, 'Tipo de seguridad') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
           <?php endforeach; ?>
         </select>

@@ -10,7 +10,7 @@ window.GP = {
     wa: "5491146738707",
     instagram: "https://www.instagram.com/marceloragonese.prop/",
     matricula: "Colegio Martillero de La Matanza · Matrícula 070 - 1160",
-    horarios: "Lun a Vie 9–18h · Sáb 9–13h"
+    horarios: "Lun a Vie 9 a 13 y 16 a 19 h · Sáb 10 a 13 h · WhatsApp las 24 horas"
   },
 
   properties: [] // se carga desde api/propiedades.php (ver cargarPropiedades)
@@ -240,7 +240,7 @@ window.GP = {
   function initFeatured() {
     var wrap = $("#featured");
     if (!wrap) return;
-    var list = GP.properties.filter(function (p) { return p.destacado && p.fotos && p.fotos.length; }).slice(0, 6);
+    var list = GP.properties.filter(function (p) { return p.destacado && p.fotos && p.fotos.length; }).reverse().slice(0, 6); // las más recientes primero (se guardan en orden de carga)
     wrap.innerHTML = list.map(cardHTML).join("");
     wireCards(wrap);
   }

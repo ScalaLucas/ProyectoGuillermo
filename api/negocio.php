@@ -44,7 +44,7 @@ function negocio_datos(): array
             'whatsapp' => '5491146738707',
             'email' => 'marceloragonesepropiedades@gmail.com',
             'matricula' => 'Colegio Martillero de La Matanza · Matrícula 070 - 1160',
-            'horario' => 'Lunes a viernes 9 a 18h · Sábados 9 a 13h',
+            'horario' => 'Lunes a viernes de 9 a 13 y de 16 a 19h · Sábados de 10 a 13h · WhatsApp las 24 horas',
             'zonas' => 'Ramos Mejía, Caseros, San Martín, Francisco Álvarez y toda la Zona Oeste',
         ],
         'servicios' => [
