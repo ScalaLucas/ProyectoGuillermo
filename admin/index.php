@@ -12,9 +12,16 @@ function admin_propiedad_activa(array $p): bool { return ($p['activa'] ?? true) 
 $totalActivas = count(array_filter($todos, 'admin_propiedad_activa'));
 $totalSuspendidas = count($todos) - $totalActivas;
 
+$destacadas = array_values(array_filter($todos, 'admin_es_destacada'));
+usort($destacadas, fn($a, $b) => strcmp($b['destacada_home'], $a['destacada_home'])); // mismo orden que en la home
+$totalDestacadas = count($destacadas);
+$puedeHome = fn($p) => admin_propiedad_activa($p) && !empty($p['fotos']);
+
 $props = $todos;
 if ($estado === 'activa') $props = array_values(array_filter($todos, 'admin_propiedad_activa'));
 elseif ($estado === 'suspendida') $props = array_values(array_filter($todos, fn($p) => !admin_propiedad_activa($p)));
+elseif ($estado === 'destacadas') $props = $destacadas;
+else $estado = 'todas';
 
 $op = $_GET['op'] ?? 'todas';
 $totalVenta = count(array_filter($props, fn($p) => ($p['operacion'] ?? '') === 'Venta'));
@@ -62,6 +69,8 @@ admin_cabecera('Panel', 'index.php');
   <?php if ($msg === 'deleted'): ?><div class="msg msg--ok">Propiedad eliminada.</div><?php endif; ?>
   <?php if ($msg === 'meli_pend'): ?><div class="msg msg--warn">Se guardó en la web. Mercado Libre todavía no está conectado, así que no se publicó ahí.</div><?php endif; ?>
   <?php if ($msg === 'meli_err'): ?><div class="msg msg--err">Se guardó en la web, pero falló la publicación en Mercado Libre. Revisá el detalle en la fila de la propiedad.</div><?php endif; ?>
+  <?php if ($msg === 'dest_ok'): ?><div class="msg msg--ok">Listo, ya se actualizó en la página principal.</div><?php endif; ?>
+  <?php if ($msg === 'dest_lleno' || ($_GET['dest'] ?? '') === 'lleno'): ?><div class="msg msg--warn">No se pudo destacar porque ya hay <?= ADMIN_DESTACADAS_MAX ?> propiedades destacadas, que es lo que entra en la página principal. Sacale la estrella a alguna y después destacá la nueva.</div><?php endif; ?>
   <?php if ($msg === 'estado_ok'): ?><div class="msg msg--ok">Estado actualizado.</div><?php endif; ?>
   <?php if ($msg === 'estado_meli_err'): ?><div class="msg msg--warn">Se actualizó el estado en la web, pero no se pudo actualizar en Mercado Libre. Revisalo manualmente ahí.</div><?php endif; ?>
   <?php if ($msg === 'estado_save_err'): ?><div class="msg msg--err">No se pudo guardar el cambio de estado: el servidor no pudo escribir en el archivo de propiedades. Probá de nuevo; si persiste, puede ser un problema de permisos en el hosting.</div><?php endif; ?>
@@ -71,11 +80,24 @@ admin_cabecera('Panel', 'index.php');
   <?php if ($msg === 'meli_desvinculada'): ?><div class="msg msg--warn">Esa publicación ya no está en Mercado Libre (la borraron o se cerró ahí), así que se desvinculó acá. Si querés volver a publicarla, usá "Reintentar".</div><?php endif; ?>
   <?php if ($msg === 'meli_verificada'): ?><div class="msg msg--ok">Sigue publicada en Mercado Libre.</div><?php endif; ?>
 
+  <div class="card" style="margin-bottom:20px">
+    <b>★ Destacadas en la página principal · <?= $totalDestacadas ?> de <?= ADMIN_DESTACADAS_MAX ?></b>
+    <div class="hint" style="margin:4px 0 10px">Tocá la estrella ☆ de una propiedad en la lista para que aparezca en la página principal; tocala de nuevo (★) para sacarla.<?= $totalDestacadas < ADMIN_DESTACADAS_MAX ? ' Mientras haya lugares libres, la página los completa sola con otras propiedades.' : '' ?></div>
+    <?php if ($destacadas): ?>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <?php foreach ($destacadas as $d): ?>
+      <span class="badge badge--activa" style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px">★ <?= admin_html($d['direccion'] ?? $d['id']) ?><?= !$puedeHome($d) ? ' <em style="font-style:normal;opacity:.75">(no se ve: ' . (admin_propiedad_activa($d) ? 'sin fotos' : 'suspendida') . ')</em>' : '' ?></span>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?><div class="muted">Todavía no elegiste ninguna: la página principal muestra propiedades automáticamente.</div><?php endif; ?>
+  </div>
+
   <div class="card">
     <div class="admin-tabs">
       <a class="admin-tab <?= $estado === 'todas' ? 'active' : '' ?>" href="?estado=todas&op=<?= $op ?>">Todas <span><?= count($todos) ?></span></a>
       <a class="admin-tab <?= $estado === 'activa' ? 'active' : '' ?>" href="?estado=activa&op=<?= $op ?>">Activas <span><?= $totalActivas ?></span></a>
       <a class="admin-tab <?= $estado === 'suspendida' ? 'active' : '' ?>" href="?estado=suspendida&op=<?= $op ?>">Suspendidas <span><?= $totalSuspendidas ?></span></a>
+      <a class="admin-tab <?= $estado === 'destacadas' ? 'active' : '' ?>" href="?estado=destacadas&op=<?= $op ?>">★ Destacadas <span><?= $totalDestacadas ?></span></a>
     </div>
     <div class="admin-tabs">
       <a class="admin-tab <?= $op === 'todas' ? 'active' : '' ?>" href="?estado=<?= admin_html($estado) ?>&op=todas">Venta y alquiler <span><?= $totalEnLista ?></span></a>
@@ -87,12 +109,26 @@ admin_cabecera('Panel', 'index.php');
     </div>
     <div class="table-wrap">
     <table id="prop-table">
-      <thead><tr><th>ID</th><th><button type="button" id="sort-dir" class="sort-btn" title="Ordenar por dirección (A-Z / Z-A)" style="all:unset;cursor:pointer;font-weight:inherit">Dirección <span class="arr">▼</span></button></th><th>Tipo</th><th>Operación</th><th>Precio</th><th>Fotos</th><th>Estado</th><th>Agente</th><th>Propietario</th><th>Mercado Libre</th><th></th></tr></thead>
+      <thead><tr><th title="Destacada en la página principal">Home</th><th>ID</th><th><button type="button" id="sort-dir" class="sort-btn" title="Ordenar por dirección (A-Z / Z-A)" style="all:unset;cursor:pointer;font-weight:inherit">Dirección <span class="arr">▼</span></button></th><th>Tipo</th><th>Operación</th><th>Precio</th><th>Fotos</th><th>Estado</th><th>Agente</th><th>Propietario</th><th>Mercado Libre</th><th></th></tr></thead>
       <?php foreach ([['Activas', $gActivas, 'activa'], ['Suspendidas', $gSuspendidas, 'suspendida']] as [$tituloGrupo, $grupo, $claveGrupo]): if (!$grupo) continue; ?>
       <tbody class="prop-group" data-grupo="<?= $claveGrupo ?>">
-        <tr class="group-row"><td colspan="11" style="background:#f3efe8;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px;padding:10px 14px"><?= $tituloGrupo ?> (<?= count($grupo) ?>)</td></tr>
+        <tr class="group-row"><td colspan="12" style="background:#f3efe8;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px;padding:10px 14px"><?= $tituloGrupo ?> (<?= count($grupo) ?>)</td></tr>
         <?php foreach ($grupo as $p): $interno = $p['interno'] ?? []; ?>
-        <tr data-search="<?= admin_html(mb_strtolower(($p['id'] ?? '') . ' ' . ($p['direccion'] ?? '') . ' ' . ($interno['agente'] ?? '') . ' ' . ($interno['propietario_nombre'] ?? ''))) ?>">
+        <tr id="p-<?= admin_html($p['id'] ?? '') ?>" data-search="<?= admin_html(mb_strtolower(($p['id'] ?? '') . ' ' . ($p['direccion'] ?? '') . ' ' . ($interno['agente'] ?? '') . ' ' . ($interno['propietario_nombre'] ?? ''))) ?>">
+          <td style="text-align:center">
+            <?php $esDest = admin_es_destacada($p); ?>
+            <?php if ($esDest || $puedeHome($p)): ?>
+            <form method="post" action="estado.php" style="display:inline">
+              <input type="hidden" name="csrf" value="<?= admin_html(admin_csrf_token()) ?>">
+              <input type="hidden" name="accion" value="destacar">
+              <input type="hidden" name="id" value="<?= admin_html($p['id'] ?? '') ?>">
+              <input type="hidden" name="volver" value="estado=<?= admin_html($estado) ?>&op=<?= admin_html($op) ?>">
+              <button type="submit" class="star-btn<?= $esDest ? ' on' : '' ?>" title="<?= $esDest ? 'Destacada en la página principal. Tocá para sacarla.' : 'Tocá para destacarla en la página principal' ?>" aria-label="<?= $esDest ? 'Quitar de destacadas' : 'Destacar en la página principal' ?>"><?= $esDest ? '★' : '☆' ?></button>
+            </form>
+            <?php else: ?>
+            <span class="star-btn off" title="<?= admin_propiedad_activa($p) ? 'Necesita al menos una foto para poder destacarla' : 'Está suspendida: reactivala para poder destacarla' ?>">☆</span>
+            <?php endif; ?>
+          </td>
           <td><?= admin_html($p['id'] ?? '') ?></td>
           <td><?= admin_html($p['direccion'] ?? '') ?></td>
           <td><?= admin_html($p['tipo'] ?? '') ?></td>
@@ -163,8 +199,8 @@ admin_cabecera('Panel', 'index.php');
       </tbody>
       <?php endforeach; ?>
       <tbody>
-        <?php if (!$props): ?><tr><td colspan="11" class="muted"><?= $estado === 'suspendida' ? 'No hay propiedades suspendidas.' : ($estado === 'activa' ? 'No hay propiedades activas.' : 'Todavía no hay propiedades cargadas.') ?></td></tr><?php endif; ?>
-        <tr id="prop-search-empty" hidden><td colspan="11" class="muted">Ninguna propiedad coincide con la búsqueda.</td></tr>
+        <?php if (!$props): ?><tr><td colspan="12" class="muted"><?= $estado === 'destacadas' ? 'Todavía no hay propiedades destacadas. Tocá la estrella ☆ de alguna en la pestaña "Todas".' : ($estado === 'suspendida' ? 'No hay propiedades suspendidas.' : ($estado === 'activa' ? 'No hay propiedades activas.' : 'Todavía no hay propiedades cargadas.')) ?></td></tr><?php endif; ?>
+        <tr id="prop-search-empty" hidden><td colspan="12" class="muted">Ninguna propiedad coincide con la búsqueda.</td></tr>
       </tbody>
     </table>
     </div>
@@ -197,7 +233,7 @@ admin_cabecera('Panel', 'index.php');
     grupos.forEach(function (g) {
       var filas = Array.prototype.slice.call(g.querySelectorAll('tr[data-search]'));
       filas.sort(function (a, b) {
-        return (asc ? 1 : -1) * a.cells[1].textContent.trim().localeCompare(b.cells[1].textContent.trim(), 'es', { numeric: true, sensitivity: 'base' });
+        return (asc ? 1 : -1) * a.cells[2].textContent.trim().localeCompare(b.cells[2].textContent.trim(), 'es', { numeric: true, sensitivity: 'base' });
       });
       filas.forEach(function (f) { g.appendChild(f); });
     });

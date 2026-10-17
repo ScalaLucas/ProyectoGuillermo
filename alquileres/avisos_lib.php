@@ -118,10 +118,13 @@ function avisos_mensaje(string $tipo, array $c, string $dest, string $ref): ?arr
             $falta = max(0, alq_monto_periodo($c, $per) - alq_cobrado_periodo($c, $per));
             $venc = avisos_venc($c, $per);
             $pp = periodo_es($per);
+            // Cuota 13 con indexación del depósito pendiente: se avisa junto con el alquiler.
+            $ix = alq_indexacion_deposito($c);
+            $ixTxt = ($ix && !$ix['cobrado'] && $ix['periodo'] === $per) ? "\n\nAdemás, en esta cuota corresponde abonar la indexación del depósito en garantía (un mes de alquiler)" . ($ix['monto'] !== null ? ': ' . dinero($ix['monto'], 'ARS') : '') . '.' : '';
             if ($tipo === 'recordatorio') return ["Recordatorio: el alquiler de $pp vence el " . fecha_es($venc),
-                $hola . "Te recordamos que el alquiler de $pp de $dir vence el " . fecha_es($venc) . ".\n\nMonto a abonar: " . $dn($falta) . "\n\nSi ya realizaste el pago, ignorá este mensaje o enviános el comprobante para registrarlo." . $firma];
+                $hola . "Te recordamos que el alquiler de $pp de $dir vence el " . fecha_es($venc) . ".\n\nMonto a abonar: " . $dn($falta) . $ixTxt . "\n\nSi ya realizaste el pago, ignorá este mensaje o enviános el comprobante para registrarlo." . $firma];
             if ($tipo === 'vencimiento') return ["Vencimiento del alquiler de $pp",
-                $hola . "El alquiler de $pp de $dir " . (date('Y-m-d') > $venc ? 'venció el ' : 'vence hoy, ') . fecha_es($venc) . " y todavía no registramos el pago.\n\nMonto a abonar: " . $dn($falta) . "\n\nSi ya pagaste, enviános el comprobante para registrarlo." . $firma];
+                $hola . "El alquiler de $pp de $dir " . (date('Y-m-d') > $venc ? 'venció el ' : 'vence hoy, ') . fecha_es($venc) . " y todavía no registramos el pago.\n\nMonto a abonar: " . $dn($falta) . $ixTxt . "\n\nSi ya pagaste, enviános el comprobante para registrarlo." . $firma];
             return ["Pago pendiente: alquiler de $pp",
                 $hola . "No registramos el pago del alquiler de $pp de $dir (venció el " . fecha_es($venc) . ").\n\nSaldo pendiente: " . $dn($falta) . "\n\nTe pedimos que lo regularices a la brevedad. Si ya pagaste, enviános el comprobante; si tenés alguna dificultad, comunicate con nosotros y lo vemos." . $firma];
         case 'mora_fiador':

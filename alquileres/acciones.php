@@ -40,6 +40,8 @@ switch ($accion) {
             'ajuste_pct_fijo' => t('ajuste_pct_fijo', 20) === '' ? '' : max(-99, min(1000, n('ajuste_pct_fijo'))),
             'comision' => max(0, min(100, n('comision'))),
             'deposito' => max(0, n('deposito')),
+            'deposito_moneda' => alq_moneda(t('deposito_moneda', 3) ?: t('moneda', 3)),
+            'indexar_deposito' => !empty($_POST['indexar_deposito']),
             'interes_mora' => max(0, min(10, n('interes_mora'))),
             'dia_venc' => max(1, min(28, (int)n('dia_venc') ?: 10)),
             'seguro_contratado' => !empty($_POST['seguro_contratado']),

@@ -426,6 +426,24 @@ function meli_normalizar_texto(string $s): string
  * descripción, agrupadas, en vez de perderse. Se excluyen los "No" (no aportan
  * nada al comprador) y los campos internos de uso propio (Operación, etc.).
  */
+/**
+ * Pasa un número escrito "a la argentina" al formato que entiende Mercado
+ * Libre (punto decimal, sin separador de miles), conservando la unidad:
+ * "300.000 ARS" → "300000 ARS", "1.250,50 ARS" → "1250.50 ARS", "8.5 m" queda igual.
+ * Sin esto, ML lee el punto de miles como decimal y "300.000" llega como 300.
+ */
+function meli_numero_ml(string $valor): string
+{
+    if (!preg_match('/^\s*([\d.,]+)(.*)$/su', $valor, $m)) return $valor;
+    $num = $m[1];
+    if (str_contains($num, ',')) {
+        $num = str_replace(['.', ','], ['', '.'], $num);          // "1.250,50" → "1250.50"
+    } elseif (preg_match('/^\d{1,3}(\.\d{3})+$/', $num)) {
+        $num = str_replace('.', '', $num);                       // "300.000" → "300000"
+    }
+    return $num . $m[2];
+}
+
 function meli_construir_atributos(string $token, string $categoria, array $propiedad): array
 {
     $r = meli_http('GET', MELI_API . '/categories/' . $categoria . '/attributes', [
@@ -488,7 +506,7 @@ function meli_construir_atributos(string $token, string $categoria, array $propi
                 $usados[$def['id']] = true;
                 continue;
             }
-            $atributos[] = ['id' => $def['id'], 'value_name' => $valor];
+            $atributos[] = ['id' => $def['id'], 'value_name' => $esNumerico ? meli_numero_ml($valor) : $valor];
             $usados[$def['id']] = true;
         }
     }
